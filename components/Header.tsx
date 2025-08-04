@@ -25,24 +25,24 @@ function Header() {
     }
   };
   return (
-    <header className="flex flex-wrap justify-between items-center px-4 py-2">
-      <div className="flex flex-wrap justify-between items-center">
+    <header className="flex justify-between items-center px-4 py-4">
+      <div className="flex w-full items-center justify-between gap-4 flex-wrap px-4">
         <Link
           href="/"
-          className="text-2xl font-bold text-blue-500 hover-obacity-50 cursor-pointer mx-auto sm:mx-0"
+          className="text-4xl font-extrabold text-blue-600 hover:text-red-500 transition-all"
         >
-          E-commerce store
+          Trendy<span className="text-red-500">Fit</span>
         </Link>
         <Form
           action="/search"
-          className="w-full sm:w-auto sm:flex-1 sm:mx-4 mt-2 sm:mt-0"
+          className="w-1/2 sm:w-auto sm:flex-1 sm:mx-4 mt-2 sm:mt-0"
         >
           <input
             type="text"
             name="query"
             placeholder="Search for products"
             className="bg-gray-100 text-gray-800 px-4 py-2 rounded focus:outline-none focus:ring-2
-     focus:ring-blue-500 focus:ring-opacity-50 border w-full max-w-4xl"
+     focus:ring-blue-500 focus:ring-opacity-50 border w-1/2"
           />
         </Form>
         <div className="flex items-center space-x-4 mt-4 sm:mt-0 flex-1 sm:flex-none">
