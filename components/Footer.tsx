@@ -65,16 +65,16 @@ function Footer({ categories }: { categories: Category[] }) {
             <h3 className="font-bold mb-4 text-lg">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="#">About us</Link>
+                <Link href="/information/about">About Us</Link>
               </li>
               <li>
-                <Link href="#">Contact us</Link>
+                <Link href="/information/contact">Contact us</Link>
               </li>
               <li>
-                <Link href="#">Terms & Conditions</Link>
+                <Link href="/information/terms_conditions">Terms & Conditions</Link>
               </li>
               <li>
-                <Link href="#">Privacy Policy</Link>
+                <Link href="/information/privacy_policy">Privacy Policy</Link>
               </li>
             </ul>
           </div>
