@@ -7,7 +7,7 @@ export default function ContactPage() {
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4 tracking-tight">Get in Touch</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Whether you're looking for product info or need support — we're here to help. Let’s start a conversation.
+            Whether you are looking for product info or need support — we are here to help. Let us start a conversation.
           </p>
         </div>
 
