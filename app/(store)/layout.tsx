@@ -7,7 +7,9 @@ import { SanityLive } from "@/sanity/lib/live";
 import { draftMode } from "next/headers";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
 import { VisualEditing } from "next-sanity";
-
+import Footer from "@/components/Footer";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
+import { getAllCategories } from "@/sanity/lib/products/getAllCategories";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,23 +31,26 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+    const categories = await getAllCategories();
   return (
     <ClerkProvider dynamic>
-    <html lang="en">
-      <body >
-        {(await draftMode()).isEnabled && (
-          <>
-            <DisableDraftMode />
-            <VisualEditing/>  
-          </>
+      <html lang="en">
+        <body>
+          {(await draftMode()).isEnabled && (
+            <>
+              <DisableDraftMode />
+              <VisualEditing />
+            </>
           )}
-        <main>
-          <Header/>
-        {children}
-        </main>
-        <SanityLive />
-      </body>
-    </html>
+          <main className="pt-20">
+            <Header />
+            {children}
+            <Footer categories={categories} />
+              <ScrollToTopButton />
+          </main>
+          <SanityLive />
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

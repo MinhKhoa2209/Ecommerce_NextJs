@@ -118,7 +118,7 @@ function BasketPage() {
             <p className="flex justify-between text-2xl font-bold border-t pt-2">
               <span>Total:</span>
               <span>
-                £{useBasketStore.getState().getTotalPrice().toFixed(2)}
+                ${useBasketStore.getState().getTotalPrice().toFixed(2)}
               </span>
             </p>
           </div>

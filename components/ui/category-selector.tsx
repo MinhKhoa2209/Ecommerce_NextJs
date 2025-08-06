@@ -39,7 +39,7 @@ export function CategorySelectorComponent({
           aria-expanded={open}
           className="w-full max-w-full relative flex justify-center sm:justify-start
                  sm:flex-none items-center space-x-2 bg-blue-500 hover:bg-blue-700
-                 text-white font-bold py-4 px-4 rounded"
+                 text-white font-bold py-4 px-4 rounded ml-4"
         >
           {value
             ? categories.find((category) => category._id === value)?.title
