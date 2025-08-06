@@ -23,7 +23,7 @@ export default function AboutPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.6 }}
         >
-          Your go-to destination for premium gear, lifestyle essentials, and the bold spirit of modern fashion. At TrendyFit, we’re driven by innovation and empowered by design — made for athletes, creators, and trendsetters like you.
+          Your go-to destination for premium gear, lifestyle essentials, and the bold spirit of modern fashion. At TrendyFit, we are driven by innovation and empowered by design — made for athletes, creators, and trendsetters like you.
         </motion.p>
 
         <motion.div
@@ -35,14 +35,14 @@ export default function AboutPage() {
           <div>
             <h2 className="text-2xl font-bold mb-4">Our Vision</h2>
             <p className="text-gray-700 leading-relaxed">
-              From day one, we’ve believed in pushing boundaries — blending performance with style, and boldness with authenticity. We're here to elevate not just your outfit, but your mindset. Every piece is crafted to empower you to go further, train harder, and live bolder.
+              From day one, we are believed in pushing boundaries — blending performance with style, and boldness with authenticity. We are here to elevate not just your outfit, but your mindset. Every piece is crafted to empower you to go further, train harder, and live bolder.
             </p>
           </div>
 
           <div>
             <h2 className="text-2xl font-bold mb-4">Where We Are</h2>
             <p className="text-gray-700 leading-relaxed">
-              Whether you're browsing the latest drops or hunting for essentials, our digital shelves are stocked with curated collections just for you. Every promo or campaign will be announced through our **official channels only**:
+              Whether you are browsing the latest drops or hunting for essentials, our digital shelves are stocked with curated collections just for you. Every promo or campaign will be announced through our **official channels only**:
             </p>
             <ul className="mt-4 text-gray-800 list-disc list-inside space-y-2">
               <li>
@@ -85,7 +85,7 @@ export default function AboutPage() {
           transition={{ delay: 1, duration: 0.6 }}
         >
           <p className="text-gray-600 text-lg">
-            Thank you for being part of the TrendyFit journey. Let’s move — together.
+            Thank you for being part of the TrendyFit journey. Let us move — together.
           </p>
         </motion.div>
       </section>
