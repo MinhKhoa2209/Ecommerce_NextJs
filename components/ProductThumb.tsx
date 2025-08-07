@@ -1,10 +1,29 @@
+"use client";
+
 import { Product } from "@/sanity.types";
 import Link from "next/link";
 import Image from "next/image";
 import { imageUrl } from "@/lib/imageUrl";
+import useStore from "@/store/store"; // store có wishlist
+import { HeartIcon } from "@sanity/icons";
 
 function ProductThumb({ product }: { product: Product }) {
   const isOutOfStock = product.stock != null && product.stock <= 0;
+
+  const favoriteProduct = useStore((state) => state.favoriteProduct);
+  const addToFavorite = useStore((state) => state.addToFavorite);
+  const removeFromFavorite = useStore((state) => state.removeFromFavorite);
+
+  const isFavorited = favoriteProduct.some((item) => item._id === product._id);
+
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault(); // ngăn redirect khi click icon
+    if (isFavorited) {
+      removeFromFavorite(product._id);
+    } else {
+      addToFavorite(product);
+    }
+  };
 
   return (
     <Link
@@ -49,9 +68,23 @@ function ProductThumb({ product }: { product: Product }) {
             .join(" ") || "No description available"}
         </p>
 
-        <p className="mt-auto pt-2 text-lg font-bold text-gray-900">
-          ${product.price?.toFixed(2)}
-        </p>
+        {/* Giá tiền + Nút yêu thích */}
+        <div className="mt-auto pt-2 flex items-center justify-between">
+          <p className="text-lg font-bold text-gray-900">
+            ${product.price?.toFixed(2)}
+          </p>
+          <button
+            onClick={toggleFavorite}
+            className="transition-colors duration-200"
+            aria-label="Add to wishlist"
+          >
+            <HeartIcon
+              className={`w-6 h-6 ${
+                isFavorited ? "text-red-500" : "text-gray-400"
+              } hover:scale-110`}
+            />
+          </button>
+        </div>
       </div>
     </Link>
   );

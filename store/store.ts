@@ -3,29 +3,38 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export interface BasketItem {
-    product: Product;
-    quantity: number;
+  product: Product;
+  quantity: number;
 }
 
-interface BasketState {
-    items: BasketItem[];
-    addItem: (product: Product) => void;
-    removeItem: (productId: string) => void;
-    clearBasket: () => void;
-    getTotalPrice: () => number;
-    getItemCount: (productId: string) => number;
-    getGroupedItems:() => BasketItem[];
+interface StoreState {
+  // --- BASKET ---
+  items: BasketItem[];
+  addItem: (product: Product) => void;
+  removeItem: (productId: string) => void;
+  clearBasket: () => void;
+  getTotalPrice: () => number;
+  getItemCount: (productId: string) => number;
+  getGroupedItems: () => BasketItem[];
+
+  // --- WISHLIST ---
+  favoriteProduct: Product[];
+  addToFavorite: (product: Product) => Promise<void>;
+  removeFromFavorite: (productId: string) => void;
+  isFavorite: (productId: string) => boolean;
+  clearFavorite: () => void;
 }
-const useBasketStore = create<BasketState>()(
+
+const useStore = create<StoreState>()(
   persist(
     (set, get) => ({
+      // --- BASKET ---
       items: [],
       addItem: (product) =>
         set((state) => {
           const existingItem = state.items.find(
             (item) => item.product._id === product._id
           );
-
           if (existingItem) {
             return {
               items: state.items.map((item) =>
@@ -48,7 +57,6 @@ const useBasketStore = create<BasketState>()(
               if (item.quantity > 1) {
                 acc.push({ ...item, quantity: item.quantity - 1 });
               }
-           
             } else {
               acc.push(item);
             }
@@ -72,11 +80,43 @@ const useBasketStore = create<BasketState>()(
       },
 
       getGroupedItems: () => get().items,
+
+      // --- WISHLIST ---
+      favoriteProduct: [],
+      addToFavorite: async (product) => {
+        const exists = get().favoriteProduct.find((p) => p._id === product._id);
+        if (exists) {
+          // Remove if already favorite
+          set((state) => ({
+            favoriteProduct: state.favoriteProduct.filter(
+              (p) => p._id !== product._id
+            ),
+          }));
+        } else {
+          // Add to favorites
+          set((state) => ({
+            favoriteProduct: [...state.favoriteProduct, product],
+          }));
+        }
+      },
+
+      removeFromFavorite: (productId) =>
+        set((state) => ({
+          favoriteProduct: state.favoriteProduct.filter(
+            (p) => p._id !== productId
+          ),
+        })),
+
+      isFavorite: (productId) => {
+        return get().favoriteProduct.some((p) => p._id === productId);
+      },
+
+      clearFavorite: () => set({ favoriteProduct: [] }),
     }),
     {
-      name: "basket-store",
+      name: "store", // Dữ liệu được lưu tại localStorage key "store"
     }
   )
 );
 
-export default useBasketStore;
+export default useStore;
