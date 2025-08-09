@@ -8,7 +8,7 @@ import React from 'react'
  ) {
     const { slug } = await params;
     const products = await getProductsByCategory(slug);
-    const categories = await getAllCategories(); // Assuming you have a function to fetch categories
+    const categories = await getAllCategories(); 
 
  return (
   <div className="flex flex-col items-center justify-top min-h-screen bg-gray-100 p-4">
@@ -20,7 +20,7 @@ import React from 'react'
           .join(" ")}{" "}
         Collection
       </h1>
-      <ProductsView products={products} categories={categories} />
+      <ProductsView products={products} />
     </div>
   </div>
 );
