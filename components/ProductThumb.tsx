@@ -4,7 +4,7 @@ import { Product } from "@/sanity.types";
 import Link from "next/link";
 import Image from "next/image";
 import { imageUrl } from "@/lib/imageUrl";
-import useStore from "@/store/store"; // store có wishlist
+import useStore from "@/store/store"; 
 import { HeartIcon } from "@sanity/icons";
 
 function ProductThumb({ product }: { product: Product }) {
@@ -17,7 +17,7 @@ function ProductThumb({ product }: { product: Product }) {
   const isFavorited = favoriteProduct.some((item) => item._id === product._id);
 
   const toggleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault(); // ngăn redirect khi click icon
+    e.preventDefault(); 
     if (isFavorited) {
       removeFromFavorite(product._id);
     } else {
@@ -68,7 +68,6 @@ function ProductThumb({ product }: { product: Product }) {
             .join(" ") || "No description available"}
         </p>
 
-        {/* Giá tiền + Nút yêu thích */}
         <div className="mt-auto pt-2 flex items-center justify-between">
           <p className="text-lg font-bold text-gray-900">
             ${product.price?.toFixed(2)}
@@ -80,8 +79,10 @@ function ProductThumb({ product }: { product: Product }) {
           >
             <HeartIcon
               className={`w-6 h-6 ${
-                isFavorited ? "text-red-500" : "text-gray-400"
-              } hover:scale-110`}
+                isFavorited
+                  ? "text-red-500 fill-red-500"
+                  : "text-gray-400 fill-none"
+              } hover:scale-110 transition-transform duration-200`}
             />
           </button>
         </div>

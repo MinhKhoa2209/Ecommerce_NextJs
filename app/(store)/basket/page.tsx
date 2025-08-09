@@ -7,10 +7,12 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { imageUrl } from "@/lib/imageUrl";
 import Loader from "@/components/Loader";
-import { set } from "sanity";
-import { create } from "domain";
-import { createCheckoutSession, Metadata } from "@/actions/createCheckoutSession";
 
+import {
+  createCheckoutSession,
+  Metadata,
+} from "@/actions/createCheckoutSession";
+import { ShoppingBasket } from "lucide-react";
 
 function BasketPage() {
   const groupedItems = useBasketStore((state) => state.getGroupedItems());
@@ -30,9 +32,24 @@ function BasketPage() {
 
   if (groupedItems.length === 0) {
     return (
-      <div className="container mx-auto p-4 flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Your Basket</h1>
-        <p className="text-gray-600 text-lg">Your basket is empty.</p>
+      <div className=" mx-auto p-6 flex flex-col items-center justify-center min-h-[60vh] text-center rounded-xl ">
+        <div className="mb-4  text-red-500 hover:text-red-600 drop-shadow-md transition duration-300">
+          <ShoppingBasket className="w-16 h-16" strokeWidth={1.5} />
+        </div>
+
+        <h1 className="text-3xl font-extrabold mb-4 text-gray-800 tracking-wide">
+          Your Basket is Empty
+        </h1>
+        <p className="text-gray-600 text-lg mb-6 max-w-md">
+          Looks like you have not added anything to your basket yet. Start
+          exploring our amazing products!
+        </p>
+        <a
+          href="/"
+          className="px-6 py-2 bg-red-500 text-white font-semibold rounded-full hover:bg-red-600 transition duration-300 ease-in-out"
+        >
+          Browse Products
+        </a>
       </div>
     );
   }
@@ -53,7 +70,6 @@ function BasketPage() {
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
       }
-      
     } catch (error) {
       console.error("Error during checkout:", error);
     } finally {

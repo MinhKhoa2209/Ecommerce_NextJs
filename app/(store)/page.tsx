@@ -1,27 +1,30 @@
 import BlackFridayBanner from "@/components/BlackFridayBanner";
+import Header from "@/components/Header";
+import HotFeaturedProducts from "@/components/HotFeaturedProducts";
 import ProductsView from "@/components/ProductsView";
 import { getAllCategories } from "@/sanity/lib/products/getAllCategories";
 import { getAllProducts } from "@/sanity/lib/products/getAllProducts";
+import { getProductsByFeatured } from "@/sanity/lib/products/getProductsByFeatured";
 
 export const dynamic = "force-static";
 export const revalidate = 60;
 
 export default async function Home() {
-  const products = await getAllProducts(); 
-  const categories = await getAllCategories(); 
+  const products = await getAllProducts();
+  const categories = await getAllCategories();
+  const featuredProducts = await getProductsByFeatured();
   console.log(
-  crypto.randomUUID().slice(0, 5) +
-    ` >>> Rerendered the home page cache with ${products.length} products and ${categories.length} categories`
-);
+    crypto.randomUUID().slice(0, 5) +
+      ` >>> Rerendered the home page cache with ${products.length} products and ${categories.length} categories`
+  );
 
   return (
-   <div>
-     <BlackFridayBanner />
+    <div>
+      <BlackFridayBanner />
+      <HotFeaturedProducts featuredProducts={featuredProducts} />
       <div className="flex flex-col items-center justify-top min-h-screen bg-gray-100">
-        <ProductsView products={products} categories={categories} />
+        <ProductsView products={products}  />
       </div>
-   </div>
- 
+    </div>
   );
 }
-

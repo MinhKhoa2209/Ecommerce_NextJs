@@ -10,6 +10,23 @@ import { Heart, Trash2 } from "lucide-react";
 export default function WishlistPage() {
   const { favoriteProduct, removeFromFavorite, clearFavorite } = useStore();
 
+  if (favoriteProduct.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <Heart className="w-16 h-16 mb-6 text-gray-400 opacity-70" />
+        <h2 className="text-2xl font-semibold mb-2">Your wishlist is empty</h2>
+        <p className="text-muted-foreground mb-6">
+          Looks like you have not added anything yet. Let us change that!
+        </p>
+        <Link href="/">
+          <Button size="lg" className="px-6 py-2 rounded-full">
+            Browse Products
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-[1440px] mx-auto px-6 py-12">
       <div className="flex items-center justify-between mb-10">
@@ -31,80 +48,62 @@ export default function WishlistPage() {
           </Button>
         )}
       </div>
-
-      {favoriteProduct.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <Heart className="w-16 h-16 mb-6 text-gray-400 opacity-70" />
-          <h2 className="text-2xl font-semibold mb-2">
-            Your wishlist is empty
-          </h2>
-          <p className="text-muted-foreground mb-6">
-            Looks like you have not added anything yet. Let us change that!
-          </p>
-          <Link href="/">
-            <Button size="lg" className="px-6 py-2 rounded-full">
-              Browse Products
-            </Button>
-          </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
-          {favoriteProduct.map((product) => (
-            <div
-              key={product._id}
-              className="group relative bg-white rounded-3xl border border-gray-300 shadow-sm hover:shadow-md transition duration-300 overflow-hidden"
-            >
-              <Link href={`/product/${product.slug?.current}`}>
-                <div className="relative w-full aspect-square  overflow-hidden">
-                  {product.image && (
-                    <Image
-                      src={imageUrl(product.image).url()}
-                      alt={product.name || "Product image"}
-                      fill
-                      className="object-contain p-4 group-hover:scale-105 transition-transform duration-300 ease-in-out"
-                    />
-                  )}
-                </div>
-              </Link>
-
-              <div className="p-5">
-                <h2 className="text-lg font-bold mb-1 truncate">
-                  {product.name}
-                </h2>
-
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                  {product.description
-                    ?.map((block) =>
-                      block._type === "block"
-                        ? block.children?.map((child) => child.text).join("")
-                        : ""
-                    )
-                    .join(" ") || "No description available."}
-                </p>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-xl font-semibold text-black">
-                    ${product.price?.toFixed(2)}
-                  </span>
-
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-destructive hover:text-red-600"
-                    onClick={() => removeFromFavorite(product._id)}
-                  >
-                    <Trash2 size={18} />
-                  </Button>
-                </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+        {favoriteProduct.map((product) => (
+          <div
+            key={product._id}
+            className="group relative bg-white rounded-3xl border border-gray-300 shadow-sm hover:shadow-md transition duration-300 overflow-hidden"
+          >
+            <Link href={`/product/${product.slug?.current}`}>
+              <div className="relative w-full aspect-square  overflow-hidden">
+                {product.image && (
+                  <Image
+                    src={imageUrl(product.image).url()}
+                    alt={product.name || "Product image"}
+                    fill
+                    className="object-contain p-4 group-hover:scale-105 transition-transform duration-300 ease-in-out"
+                  />
+                )}
               </div>
+            </Link>
 
-              <div className="absolute top-4 right-4 z-10">
-                <Heart className="w-5 h-5 text-red-500 fill-red-500" />
+            <div className="p-5">
+              <h2 className="text-lg font-bold mb-1 truncate">
+                {product.name}
+              </h2>
+
+              <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                {product.description
+                  ?.map((block) =>
+                    block._type === "block"
+                      ? block.children?.map((child) => child.text).join("")
+                      : ""
+                  )
+                  .join(" ") || "No description available."}
+              </p>
+
+              <div className="flex items-center justify-between">
+                <span className="text-xl font-semibold text-black">
+                  ${product.price?.toFixed(2)}
+                </span>
+
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-destructive hover:text-red-600"
+                  onClick={() => removeFromFavorite(product._id)}
+                >
+                  <Trash2 size={18} />
+                </Button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+
+            <div className="absolute top-4 right-4 z-10">
+              <Heart className="w-5 h-5 text-red-500 fill-red-500" />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronsUpDown, Check } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,33 +23,43 @@ import { Category } from "@/sanity.types";
 interface CategorySelectorProps {
   categories: Category[];
 }
+
 export function CategorySelectorComponent({
   categories,
 }: CategorySelectorProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<string>("");
   const router = useRouter();
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger
+        asChild
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+      >
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full max-w-full relative flex justify-center sm:justify-start
+          className="w-40 relative flex justify-center sm:justify-start
                  sm:flex-none items-center space-x-2 bg-blue-500 hover:bg-blue-700
-                 text-white font-bold py-4 px-4 rounded ml-4"
+                 text-white font-bold py-5 px-4 rounded "
         >
           {value
             ? categories.find((category) => category._id === value)?.title
             : "Filter by Category"}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0" />
+          <ChevronsUpDown className=" h-4 w-4 shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent
+        className="w-40 p-0"
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+      >
         <Command>
           <CommandInput
-            placeholder="Search category ..."
+            placeholder="Search category..."
             className="h-9"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -76,8 +85,13 @@ export function CategorySelectorComponent({
                   key={category._id}
                   value={category.title}
                   onSelect={() => {
-                    setValue(value === category._id ? "" : category._id);
-                    router.push(`/categories/${category.slug?.current}`);
+                    if (value === category._id) {
+                      setValue("");
+                      router.push("/");
+                    } else {
+                      setValue(category._id);
+                      router.push(`/categories/${category.slug?.current}`);
+                    }
                     setOpen(false);
                   }}
                 >
