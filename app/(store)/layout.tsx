@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "../globals.css";
-import Header from "@/components/Header";
 import { SanityLive } from "@/sanity/lib/live";
 import { draftMode } from "next/headers";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
@@ -10,6 +9,7 @@ import { VisualEditing } from "next-sanity";
 import Footer from "@/components/Footer";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { getAllCategories } from "@/sanity/lib/products/getAllCategories";
+import Header from "@/components/Header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +31,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-    const categories = await getAllCategories();
+  const categories = await getAllCategories();
   return (
     <ClerkProvider dynamic>
       <html lang="en">
@@ -43,7 +43,7 @@ export default async function RootLayout({
             </>
           )}
           <main className="pt-20">
-            <Header />
+            <Header categories={categories} />
             {children}
             <Footer categories={categories} />
               <ScrollToTopButton />
