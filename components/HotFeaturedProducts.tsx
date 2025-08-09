@@ -8,7 +8,7 @@ import useStore from "@/store/store";
 import useBasketStore from "@/store/store";
 import { Product } from "@/sanity.types";
 import { useCallback } from "react";
-
+import { PortableText } from "next-sanity";
 
 function useFavoriteLogic() {
   const favoriteProduct = useStore((state) => state.favoriteProduct);
@@ -71,7 +71,6 @@ export default function HotFeaturedProductsClient({
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                 )}
-                
 
                 {/* Heart Icon overlay */}
                 <button
@@ -91,44 +90,36 @@ export default function HotFeaturedProductsClient({
                   />
                 </button>
               </div>
-                  </Link>
+            </Link>
 
-              <div className="p-5 flex flex-col gap-3">
-                <h3 className="text-lg font-bold line-clamp-1">
-                  {product.name}
-                </h3>
-                <p className="text-gray-500 text-sm line-clamp-2">
-                  {Array.isArray(product.description)
-                    ? product.description
-                        .map((block: any) =>
-                          block._type === "block"
-                            ? block.children
-                                ?.map((child: any) => child.text)
-                                .join("")
-                            : ""
-                        )
-                        .join(" ")
-                    : "No description available."}
-                </p>
-
-                {/* Giá tiền + nút giỏ hàng */}
-                <div className="flex items-center justify-between mt-auto">
-                  <p className="text-lg font-bold bg-gradient-to-r from-pink-500 to-orange-500 bg-clip-text text-transparent">
-                    {product.price ? `$${product.price.toFixed(2)}` : "—"}
-                  </p>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      addItem(product);
-                    }}
-                    className="p-2 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md transition-colors"
-                    aria-label="Add to cart"
-                  >
-                    <ShoppingCart className="w-5 h-5 text-white" />
-                  </button>
-                </div>
+            <div className="p-5 flex flex-col gap-3">
+              <h3 className="text-lg font-bold line-clamp-1">{product.name}</h3>
+              <div className="text-gray-500 text-sm line-clamp-2">
+                {Array.isArray(product.description) &&
+                product.description.length > 0 ? (
+                  <PortableText value={product.description} />
+                ) : (
+                  "No description available."
+                )}
               </div>
-        
+
+              {/* Giá tiền + nút giỏ hàng */}
+              <div className="flex items-center justify-between mt-auto">
+                <p className="text-lg font-bold bg-gradient-to-r from-pink-500 to-orange-500 bg-clip-text text-transparent">
+                  {product.price ? `$${product.price.toFixed(2)}` : "—"}
+                </p>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addItem(product);
+                  }}
+                  className="p-2 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md transition-colors"
+                  aria-label="Add to cart"
+                >
+                  <ShoppingCart className="w-5 h-5 text-white" />
+                </button>
+              </div>
+            </div>
           </div>
         ))}
       </div>
