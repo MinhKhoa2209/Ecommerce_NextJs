@@ -13,6 +13,7 @@ import {
   Metadata,
 } from "@/actions/createCheckoutSession";
 import { ShoppingBasket } from "lucide-react";
+import Link from "next/link";
 
 function BasketPage() {
   const groupedItems = useBasketStore((state) => state.getGroupedItems());
@@ -44,12 +45,12 @@ function BasketPage() {
           Looks like you have not added anything to your basket yet. Start
           exploring our amazing products!
         </p>
-        <a
+        <Link
           href="/"
           className="px-6 py-2 bg-red-500 text-white font-semibold rounded-full hover:bg-red-600 transition duration-300 ease-in-out"
         >
           Browse Products
-        </a>
+        </Link>
       </div>
     );
   }
