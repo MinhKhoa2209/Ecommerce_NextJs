@@ -8,6 +8,7 @@ export type Metadata = {
   customerName: string;
   customerEmail: string;
   clerkUserId: string;
+  shippingAddressJson?: string;
 };
 
 export type GroupedBasketItem = {

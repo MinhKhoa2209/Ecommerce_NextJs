@@ -61,6 +61,16 @@ export type Order = {
   currency?: string;
   amountDiscount?: number;
   status?: "pending" | "paid" | "shipped" | "delivered" | "cancelled";
+  shippingAddress?: {
+    fullName?: string;
+    phone?: string;
+    line1?: string;
+    line2?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+  };
   orderDate?: string;
 };
 
@@ -382,6 +392,16 @@ export type MY_ORDERS_QUERYResult = Array<{
   currency?: string;
   amountDiscount?: number;
   status?: "cancelled" | "delivered" | "paid" | "pending" | "shipped";
+  shippingAddress?: {
+    fullName?: string;
+    phone?: string;
+    line1?: string;
+    line2?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+  };
   orderDate?: string;
 }>;
 

@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     try {
       const order = await createOrderInSanity(session);
       
-      // console.log("Order created in Sanity:", order);
+      console.log("Order created in Sanity:", order);
     } catch (err) {
       console.error("Error creating order in Sanity:", err);
       return NextResponse.json(
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true });
 }
 async function createOrderInSanity(session: Stripe.Checkout.Session) {
-  console.log("=== Step 1: Start createOrderInSanity ===", session);
+
 
   const {
     id,
@@ -65,24 +65,30 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
     payment_method_types,
   } = session;
 
-  console.log("Step 2: payment_method_types", payment_method_types);
-  console.log("Step 3: payment_intent", payment_intent);
+  const {
+    orderNumber,
+    customerName,
+    customerEmail,
+    clerkUserId,
+    shippingAddressJson,
+  } = metadata as Metadata & { shippingAddressJson?: string };
 
-
-
-  const { orderNumber, customerName, customerEmail, clerkUserId } =
-    metadata as Metadata;
-
-  const lineItemsWithProduct = await stripe.checkout.sessions.listLineItems(
-    id,
-    {
-      expand: ["data.price.product"],
+  let shippingAddressObj = null;
+  if (shippingAddressJson) {
+    try {
+      shippingAddressObj = JSON.parse(shippingAddressJson);
+    } catch (err) {
+      console.warn("Failed to parse shippingAddressJson", err);
     }
-  );
+  }
+
+  const lineItemsWithProduct = await stripe.checkout.sessions.listLineItems(id, {
+    expand: ["data.price.product"],
+  });
 
   let paymentMethod = "";
   if (payment_method_types?.length) {
-    paymentMethod = payment_method_types.join(", "); 
+    paymentMethod = payment_method_types.join(", ");
   }
 
   if (payment_intent && typeof payment_intent === "string") {
@@ -110,15 +116,8 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
     },
     quantity: item.quantity || 0,
   }));
-  console.log("=== Sanity Order Payload ===", {
-  _type: "order",
-  orderNumber,
-  paymentMethod, // log để chắc chắn giá trị có ở đây
 
-});
-
-
-  // Tạo document trong Sanity
+  // Tạo document order trong Sanity
   const order = await backendClient.create({
     _type: "order",
     orderNumber,
@@ -127,7 +126,7 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
     customerName,
     paymentMethod,
     stripeCustomerId: customer,
-    clerkUserId: clerkUserId,
+    clerkUserId,
     email: customerEmail,
     currency,
     amountDiscount: total_details?.amount_discount
@@ -137,6 +136,7 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
     totalPrice: amount_total ? amount_total / 100 : 0,
     status: "paid",
     orderDate: new Date().toISOString(),
+    shippingAddress: shippingAddressObj || null,
   });
 
   return order;

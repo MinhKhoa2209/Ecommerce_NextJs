@@ -149,6 +149,60 @@ export const orderType = defineType({
         ],
       },
     }),
+     defineField({
+      name: "shippingAddress",
+      title: "Shipping Address",
+      type: "object",
+      fields: [
+        defineField({
+          name: "fullName",
+          title: "Full Name",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: "phone",
+          title: "Phone Number",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: "line1",
+          title: "Address Line 1",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: "line2",
+          title: "Address Line 2",
+          type: "string",
+        }),
+        defineField({
+          name: "city",
+          title: "Province",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: "state",
+          title: "District",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: "postalCode",
+          title: "Ward",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+        defineField({
+          name: "country",
+          title: "Country",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        }),
+      ],
+    }),
     defineField({
       name: "orderDate",
       title: "Order Date",
