@@ -14,6 +14,14 @@ export const orderType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "paymentMethod",
+      title: "Payment Method",
+      type: "string",
+      description: "Brand & last 4 numbers or payment method",
+      validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
       name: "stripeCheckoutSessionId",
       title: "Stripe Checkout Session ID",
       type: "string",
@@ -22,11 +30,10 @@ export const orderType = defineType({
       name: "stripeCustomerId",
       title: "Stripe Customer ID",
       type: "string",
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "clerkUserId",
-      title: "Store  User ID",
+      title: "Store User ID",
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
@@ -46,7 +53,6 @@ export const orderType = defineType({
       name: "stripePaymentIntentId",
       title: "Stripe Payment Intent ID",
       type: "string",
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "products",
@@ -67,6 +73,30 @@ export const orderType = defineType({
               title: "Quantity Purchased",
               type: "number",
             }),
+            defineField({
+              name: "review",
+              title: "Review",
+              type: "object",
+              fields: [
+                defineField({
+                  name: "rating",
+                  title: "Rating",
+                  type: "number",
+                  validation: (Rule) => Rule.min(1).max(5),
+                }),
+                defineField({
+                  name: "comment",
+                  title: "Comment",
+                  type: "text",
+                }),
+                defineField({
+                  name: "reviewDate",
+                  title: "Review Date",
+                  type: "datetime",
+                }),
+              ],
+              hidden: ({ document }) => document?.status !== "delivered",
+            }),
           ],
           preview: {
             select: {
@@ -79,7 +109,7 @@ export const orderType = defineType({
             prepare(select) {
               return {
                 title: `${select.product} x ${select.quantity}`,
-                subtitle: `${select.price * select.quantity} `,
+                subtitle: `${(select.price ?? 0) * (select.quantity ?? 0)}`,
                 media: select.image,
               };
             },
@@ -134,28 +164,20 @@ export const orderType = defineType({
       orderId: "orderNumber",
       email: "email",
     },
-    // prepare(select) {
-    //   const orderIdSnippet = `${select.orderId.slice(0,5)}...${select.orderId.slice(-5)}`;
-    //   return {
-    //     title: `${select.name} (${orderIdSnippet})`,
-    //     subtitle: `${select.amount} ${select.currency}, ${select.email}`,
-    //     media: BasketIcon,
-    //   };
-    // },
     prepare(select) {
-  const orderId = typeof select.orderId === "string" ? select.orderId : "";
+      const orderId = typeof select.orderId === "string" ? select.orderId : "";
+      const orderIdSnippet =
+        orderId.length >= 10
+          ? `${orderId.slice(0, 5)}...${orderId.slice(-5)}`
+          : orderId;
 
-  const orderIdSnippet =
-    orderId.length >= 10
-      ? `${orderId.slice(0, 5)}...${orderId.slice(-5)}`
-      : orderId;
-
-  return {
-    title: `${select.name ?? "Unknown"} (${orderIdSnippet})`,
-    subtitle: `${select.amount ?? 0} ${select.currency ?? ""}, ${select.email ?? ""}`,
-    media: BasketIcon,
-  };
-}
-
+      return {
+        title: `${select.name ?? "Unknown"} (${orderIdSnippet})`,
+        subtitle: `${select.amount ?? 0} ${select.currency ?? ""}, ${
+          select.email ?? ""
+        }`,
+        media: BasketIcon,
+      };
+    },
   },
 });

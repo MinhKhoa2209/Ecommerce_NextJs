@@ -127,6 +127,13 @@
         },
         "optional": true
       },
+      "paymentMethod": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "stripeCheckoutSessionId": {
         "type": "objectAttribute",
         "value": {
@@ -210,6 +217,36 @@
                 "type": "objectAttribute",
                 "value": {
                   "type": "number"
+                },
+                "optional": true
+              },
+              "review": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "object",
+                  "attributes": {
+                    "rating": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "number"
+                      },
+                      "optional": true
+                    },
+                    "comment": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string"
+                      },
+                      "optional": true
+                    },
+                    "reviewDate": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string"
+                      },
+                      "optional": true
+                    }
+                  }
                 },
                 "optional": true
               }

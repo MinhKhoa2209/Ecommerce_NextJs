@@ -38,7 +38,8 @@ export async function POST(req: NextRequest) {
 
     try {
       const order = await createOrderInSanity(session);
-      console.log("Order created in Sanity:", order);
+      
+      // console.log("Order created in Sanity:", order);
     } catch (err) {
       console.error("Error creating order in Sanity:", err);
       return NextResponse.json(
@@ -50,8 +51,9 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ received: true });
 }
-
 async function createOrderInSanity(session: Stripe.Checkout.Session) {
+  console.log("=== Step 1: Start createOrderInSanity ===", session);
+
   const {
     id,
     amount_total,
@@ -60,15 +62,45 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
     payment_intent,
     customer,
     total_details,
+    payment_method_types,
   } = session;
-  console.log("Checkout session metadata:", metadata);
-  const { orderNumber, customerName, customerEmail, clerkUserId } = metadata as Metadata;
+
+  console.log("Step 2: payment_method_types", payment_method_types);
+  console.log("Step 3: payment_intent", payment_intent);
+
+
+
+  const { orderNumber, customerName, customerEmail, clerkUserId } =
+    metadata as Metadata;
+
   const lineItemsWithProduct = await stripe.checkout.sessions.listLineItems(
     id,
     {
       expand: ["data.price.product"],
     }
   );
+
+  let paymentMethod = "";
+  if (payment_method_types?.length) {
+    paymentMethod = payment_method_types.join(", "); // ví dụ "card"
+  }
+
+  if (payment_intent && typeof payment_intent === "string") {
+    const pi = await stripe.paymentIntents.retrieve(payment_intent);
+
+    if (pi.payment_method) {
+      const paymentMethodId =
+        typeof pi.payment_method === "string"
+          ? pi.payment_method
+          : pi.payment_method.id;
+
+      const pm = await stripe.paymentMethods.retrieve(paymentMethodId);
+
+      if (pm.card) {
+        paymentMethod = `${pm.card.brand.toUpperCase()} •••• ${pm.card.last4}`;
+      }
+    }
+  }
 
   const sanityProducts = lineItemsWithProduct.data.map((item) => ({
     _key: crypto.randomUUID(),
@@ -78,12 +110,22 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
     },
     quantity: item.quantity || 0,
   }));
+  console.log("=== Sanity Order Payload ===", {
+  _type: "order",
+  orderNumber,
+  paymentMethod, // log để chắc chắn giá trị có ở đây
+
+});
+
+
+  // Tạo document trong Sanity
   const order = await backendClient.create({
     _type: "order",
     orderNumber,
     stripeCheckoutSessionId: id,
     stripePaymentIntentId: payment_intent,
     customerName,
+    paymentMethod,
     stripeCustomerId: customer,
     clerkUserId: clerkUserId,
     email: customerEmail,

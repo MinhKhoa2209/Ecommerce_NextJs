@@ -35,6 +35,7 @@ export type Order = {
   _updatedAt: string;
   _rev: string;
   orderNumber?: string;
+  paymentMethod?: string;
   stripeCheckoutSessionId?: string;
   stripeCustomerId?: string;
   clerkUserId?: string;
@@ -49,6 +50,11 @@ export type Order = {
       [internalGroqTypeReferenceTo]?: "product";
     };
     quantity?: number;
+    review?: {
+      rating?: number;
+      comment?: string;
+      reviewDate?: string;
+    };
     _key: string;
   }>;
   totalPrice?: number;
@@ -294,6 +300,7 @@ export type MY_ORDERS_QUERYResult = Array<{
   _updatedAt: string;
   _rev: string;
   orderNumber?: string;
+  paymentMethod?: string;
   stripeCheckoutSessionId?: string;
   stripeCustomerId?: string;
   clerkUserId?: string;
@@ -364,6 +371,11 @@ export type MY_ORDERS_QUERYResult = Array<{
       isFeatured?: boolean;
     } | null;
     quantity?: number;
+    review?: {
+      rating?: number;
+      comment?: string;
+      reviewDate?: string;
+    };
     _key: string;
   }> | null;
   totalPrice?: number;

@@ -46,6 +46,7 @@ export async function createCheckoutSession(
       customer_email: !customerId ? metadata.customerEmail : undefined,
       metadata,
       mode: "payment",
+      payment_method_types: ["card"],
       allow_promotion_codes: true,
       success_url: successUrl,
       cancel_url: cancelUrl,
@@ -67,6 +68,8 @@ export async function createCheckoutSession(
         quantity: item.quantity,
       })),
     });
+
+
 
     return session.url;
   } catch (error) {

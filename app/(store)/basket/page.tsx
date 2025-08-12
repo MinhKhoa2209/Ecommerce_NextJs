@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { imageUrl } from "@/lib/imageUrl";
 import Loader from "@/components/Loader";
-
 import {
   createCheckoutSession,
   Metadata,
@@ -23,21 +22,24 @@ function BasketPage() {
 
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"stripe" | "cod">(
+    "stripe"
+  );
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
   if (!isClient) {
     return <Loader />;
   }
 
   if (groupedItems.length === 0) {
     return (
-      <div className=" mx-auto p-6 flex flex-col items-center justify-center min-h-[60vh] text-center rounded-xl ">
-        <div className="mb-4  text-red-500 hover:text-red-600 drop-shadow-md transition duration-300">
+      <div className="mx-auto p-6 flex flex-col items-center justify-center min-h-[60vh] text-center rounded-xl">
+        <div className="mb-4 text-red-500 hover:text-red-600 drop-shadow-md transition duration-300">
           <ShoppingBasket className="w-16 h-16" strokeWidth={1.5} />
         </div>
-
         <h1 className="text-3xl font-extrabold mb-4 text-gray-800 tracking-wide">
           Your Basket is Empty
         </h1>
@@ -55,9 +57,8 @@ function BasketPage() {
     );
   }
 
-  const handleCheckout = async () => {
+  const handleCheckoutStripe = async () => {
     if (!isSignedIn) return;
-
     setIsLoading(true);
 
     try {
@@ -72,9 +73,51 @@ function BasketPage() {
         window.location.href = checkoutUrl;
       }
     } catch (error) {
-      console.error("Error during checkout:", error);
+      console.error("Error during Stripe checkout:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCheckoutCOD = async () => {
+    if (!isSignedIn) return;
+
+    setIsLoading(true);
+    try {
+      const metadata: Metadata = {
+        orderNumber: crypto.randomUUID(),
+        customerName: user?.fullName || "Guest",
+        customerEmail: user?.emailAddresses[0]?.emailAddress ?? "unknown",
+        clerkUserId: user!.id,
+      };
+
+      const res = await fetch("/api/orders/create-cod-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          metadata,
+          items: groupedItems,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to create COD order");
+
+      const data = await res.json();
+      if (data.successUrl) {
+        window.location.href = data.successUrl;
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCheckout = () => {
+    if (paymentMethod === "stripe") {
+      handleCheckoutStripe();
+    } else {
+      handleCheckoutCOD();
     }
   };
 
@@ -115,7 +158,6 @@ function BasketPage() {
                   </p>
                 </div>
               </div>
-
               <div>{item.product.name}</div>
               <div className="flex items-center ml-4 flex-shrink-0">
                 <AddToBasketButton product={item.product} />
@@ -123,6 +165,7 @@ function BasketPage() {
             </div>
           ))}
         </div>
+
         <div className="w-full lg:w-80 lg:sticky lg:top-4 h-fit bg-white p-6 border rounded order-first lg:order-last fixed bottom-0 left-0 lg:left-auto">
           <h3 className="text-xl font-semibold">Order Summary</h3>
           <div className="mt-4 space-y-2">
@@ -139,14 +182,44 @@ function BasketPage() {
               </span>
             </p>
           </div>
+
           {isSignedIn ? (
-            <button
-              onClick={handleCheckout}
-              disabled={isLoading}
-              className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
-            >
-              {isLoading ? "Processing..." : "Checkout"}
-            </button>
+            <>
+              {/* Chọn phương thức thanh toán */}
+              <div className="mt-4 space-y-2">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    value="stripe"
+                    checked={paymentMethod === "stripe"}
+                    onChange={() => setPaymentMethod("stripe")}
+                  />
+                  <span>Checkout with Stripe</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    value="cod"
+                    checked={paymentMethod === "cod"}
+                    onChange={() => setPaymentMethod("cod")}
+                  />
+                  <span>Cash on Delivery (COD)</span>
+                </label>
+              </div>
+
+              {/* Checkout button */}
+              <button
+                onClick={handleCheckout}
+                disabled={isLoading}
+                className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+              >
+                {isLoading
+                  ? "Processing..."
+                  : paymentMethod === "stripe"
+                    ? "Checkout with Stripe"
+                    : "Checkout COD"}
+              </button>
+            </>
           ) : (
             <SignInButton mode="modal">
               <button className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">

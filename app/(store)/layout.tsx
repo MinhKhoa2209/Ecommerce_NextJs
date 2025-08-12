@@ -6,20 +6,12 @@ import { SanityLive } from "@/sanity/lib/live";
 import { draftMode } from "next/headers";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
 import { VisualEditing } from "next-sanity";
-import Footer from "@/components/Footer";
+
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { getAllCategories } from "@/sanity/lib/products/getAllCategories";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "TrendyFit",
@@ -31,7 +23,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const categories = await getAllCategories();
   return (
     <ClerkProvider dynamic>
       <html lang="en">
@@ -43,9 +34,9 @@ export default async function RootLayout({
             </>
           )}
           <main className="pt-20">
-            <Header categories={categories} />
+            <Header  />
             {children}
-            <Footer categories={categories} />
+            <Footer />
               <ScrollToTopButton />
           </main>
           <SanityLive />
