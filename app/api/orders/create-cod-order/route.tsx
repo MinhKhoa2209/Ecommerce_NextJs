@@ -37,7 +37,6 @@ export async function POST(req: NextRequest) {
       
     });
 
-      console.log("Payment method:", order.paymentMethod);
     const baseUrl =
       process.env.NODE_ENV === "production"
         ? `https://${process.env.VERCEL_URL}`

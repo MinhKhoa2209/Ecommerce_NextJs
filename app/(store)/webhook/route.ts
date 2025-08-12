@@ -82,7 +82,7 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
 
   let paymentMethod = "";
   if (payment_method_types?.length) {
-    paymentMethod = payment_method_types.join(", "); // ví dụ "card"
+    paymentMethod = payment_method_types.join(", "); 
   }
 
   if (payment_intent && typeof payment_intent === "string") {

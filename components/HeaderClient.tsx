@@ -14,6 +14,7 @@ import { TrolleyIcon, PackageIcon, HeartIcon } from "@sanity/icons";
 import useStore from "@/store/store";
 import { CategorySelectorComponent } from "./ui/category-selector";
 import { Category } from "@/sanity.types";
+import CustomUserButton from "./CustomUserButton";
 
 function HeaderClient({ categories }: { categories: Category[] }) {
   const { user } = useUser();
@@ -99,11 +100,7 @@ function HeaderClient({ categories }: { categories: Category[] }) {
 
             {user ? (
               <div className="flex items-center space-x-2">
-                <UserButton />
-                <div className="hidden sm:block text-xs">
-                  <p className="text-gray-400">Welcome Back</p>
-                  <p className="font-bold">{user.fullName}!</p>
-                </div>
+                <CustomUserButton />
               </div>
             ) : (
               <SignInButton mode="modal" />
