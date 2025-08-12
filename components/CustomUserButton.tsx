@@ -58,7 +58,7 @@ export default function CustomUserButton() {
 
       {/* Dropdown Menu */}
       {open && (
-        <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg overflow-hidden z-50">
+        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-lg overflow-hidden z-50">
           {/* Header */}
           <div className="px-4 py-3 border-b">
             <p className="text-sm font-semibold">{user.fullName}</p>
