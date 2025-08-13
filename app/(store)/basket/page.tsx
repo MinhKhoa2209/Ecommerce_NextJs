@@ -41,6 +41,9 @@ function BasketPage() {
   const [selectedItems, setSelectedItems] = useState<{ [id: string]: boolean }>(
     {}
   );
+  const removeItemsFromBasket = useBasketStore(
+    (state) => state.removeItemsFromBasket
+  );
 
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +73,6 @@ function BasketPage() {
     return <Loader />;
   }
 
-  // Lọc sản phẩm được chọn
   const itemsToBuy = groupedItems.filter(
     (item) => selectedItems[item.product._id]
   );
@@ -97,81 +99,90 @@ function BasketPage() {
       </div>
     );
   }
-const handleCheckoutStripe = async () => {
-  if (!isSignedIn) return;
-  if (!shippingAddress) {
-    alert("No default shipping address found. Please add one before checkout.");
-    return;
-  }
-  if (itemsToBuy.length === 0) {
-    alert("Please select at least one product to buy.");
-    return;
-  }
-  setIsLoading(true);
-
-  try {
-    const metadata: Metadata = {
-      orderNumber: crypto.randomUUID(),
-      customerName: clerkUser?.fullName || "Guest",
-      customerEmail: clerkUser?.emailAddresses?.[0]?.emailAddress ?? "unknown",
-      clerkUserId: clerkUser!.id,
-      shippingAddressJson: JSON.stringify(shippingAddress),
-    };
-
-    const checkoutUrl = await createCheckoutSession(itemsToBuy, metadata);
-    if (checkoutUrl) {
-      window.location.href = checkoutUrl;
+  const handleCheckoutStripe = async () => {
+    if (!isSignedIn) return;
+    if (!shippingAddress) {
+      alert(
+        "No default shipping address found. Please add one before checkout."
+      );
+      return;
     }
-  } catch (error) {
-    console.error("Error during Stripe checkout:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const handleCheckoutCOD = async () => {
-  if (!isSignedIn) return;
-  if (!shippingAddress) {
-    alert("No default shipping address found. Please add one before checkout.");
-    return;
-  }
-  if (itemsToBuy.length === 0) {
-    alert("Please select at least one product to buy.");
-    return;
-  }
-
-  setIsLoading(true);
-  try {
-    const metadata: Metadata = {
-      orderNumber: crypto.randomUUID(),
-      customerName: clerkUser?.fullName || "Guest",
-      customerEmail: clerkUser?.emailAddresses?.[0]?.emailAddress ?? "unknown",
-      clerkUserId: clerkUser!.id,
-      shippingAddressJson: JSON.stringify(shippingAddress),  // chỉ gửi JSON string
-    };
-
-    const res = await fetch("/api/orders/create-cod-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        metadata,
-        items: itemsToBuy,
-      }),
-    });
-
-    if (!res.ok) throw new Error("Failed to create COD order");
-
-    const data = await res.json();
-    if (data.successUrl) {
-      window.location.href = data.successUrl;
+    if (itemsToBuy.length === 0) {
+      alert("Please select at least one product to buy.");
+      return;
     }
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+    setIsLoading(true);
 
+    try {
+      const metadata: Metadata = {
+        orderNumber: crypto.randomUUID(),
+        customerName: clerkUser?.fullName || "Guest",
+        customerEmail:
+          clerkUser?.emailAddresses?.[0]?.emailAddress ?? "unknown",
+        clerkUserId: clerkUser!.id,
+        shippingAddressJson: JSON.stringify(shippingAddress),
+      };
+
+      const checkoutUrl = await createCheckoutSession(itemsToBuy, metadata);
+      if (checkoutUrl) {
+        removeItemsFromBasket(itemsToBuy);
+        window.location.href = checkoutUrl;
+      }
+      console.log("Products to buy:", itemsToBuy);
+    } catch (error) {
+      console.error("Error during Stripe checkout:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCheckoutCOD = async () => {
+    if (!isSignedIn) return;
+    if (!shippingAddress) {
+      alert(
+        "No default shipping address found. Please add one before checkout."
+      );
+      return;
+    }
+    if (itemsToBuy.length === 0) {
+      alert("Please select at least one product to buy.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const metadata: Metadata = {
+        orderNumber: crypto.randomUUID(),
+        customerName: clerkUser?.fullName || "Guest",
+        customerEmail:
+          clerkUser?.emailAddresses?.[0]?.emailAddress ?? "unknown",
+        clerkUserId: clerkUser!.id,
+        shippingAddressJson: JSON.stringify(shippingAddress),
+      };
+
+      const res = await fetch("/api/orders/create-cod-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          metadata,
+          items: itemsToBuy,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to create COD order");
+
+      const data = await res.json();
+      if (data.successUrl) {
+        removeItemsFromBasket(itemsToBuy);
+
+        window.location.href = data.successUrl;
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleCheckout = () => {
     if (paymentMethod === "stripe") {

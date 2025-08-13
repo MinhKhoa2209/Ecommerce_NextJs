@@ -4,7 +4,10 @@ import { Metadata, GroupedBasketItem } from "@/actions/createCheckoutSession";
 
 export async function POST(req: NextRequest) {
   try {
-    const { metadata, items }: { metadata: Metadata; items: GroupedBasketItem[] } = await req.json();
+    const {
+      metadata,
+      items,
+    }: { metadata: Metadata; items: GroupedBasketItem[] } = await req.json();
 
     const sanityProducts = items.map((item) => ({
       _key: crypto.randomUUID(),
@@ -14,6 +17,18 @@ export async function POST(req: NextRequest) {
       },
       quantity: item.quantity || 0,
     }));
+    const { shippingAddressJson } = metadata as Metadata & {
+      shippingAddressJson?: string;
+    };
+
+    let shippingAddress = null;
+    if (shippingAddressJson) {
+      try {
+        shippingAddress = JSON.parse(shippingAddressJson);
+      } catch (err) {
+        console.warn("Failed to parse shippingAddressJson", err);
+      }
+    }
 
     const order = await backendClient.create({
       _type: "order",
@@ -34,7 +49,7 @@ export async function POST(req: NextRequest) {
       ),
       status: "pending",
       orderDate: new Date().toISOString(),
-      
+      shippingAddress: shippingAddress || null,
     });
 
     const baseUrl =
@@ -45,7 +60,6 @@ export async function POST(req: NextRequest) {
     const successUrl = `${baseUrl}/success?orderId=${order._id}&orderNumber=${metadata.orderNumber}`;
 
     return NextResponse.json({ successUrl });
-    
   } catch (error) {
     console.error("Error creating COD order:", error);
     return NextResponse.json(

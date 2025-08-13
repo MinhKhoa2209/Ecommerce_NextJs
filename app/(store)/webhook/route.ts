@@ -73,10 +73,10 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
     shippingAddressJson,
   } = metadata as Metadata & { shippingAddressJson?: string };
 
-  let shippingAddressObj = null;
+  let shippingAddress = null;
   if (shippingAddressJson) {
     try {
-      shippingAddressObj = JSON.parse(shippingAddressJson);
+      shippingAddress = JSON.parse(shippingAddressJson);
     } catch (err) {
       console.warn("Failed to parse shippingAddressJson", err);
     }
@@ -136,7 +136,7 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
     totalPrice: amount_total ? amount_total / 100 : 0,
     status: "paid",
     orderDate: new Date().toISOString(),
-    shippingAddress: shippingAddressObj || null,
+    shippingAddress: shippingAddress || null,
   });
 
   return order;

@@ -13,6 +13,7 @@ interface StoreState {
   addItem: (product: Product) => void;
   removeItem: (productId: string) => void;
   clearBasket: () => void;
+  removeItemsFromBasket: (itemsToRemove: BasketItem[]) => void; 
   getTotalPrice: () => number;
   getItemCount: (productId: string) => number;
   getGroupedItems: () => BasketItem[];
@@ -66,6 +67,36 @@ const useStore = create<StoreState>()(
 
       clearBasket: () => set({ items: [] }),
 
+      // Hàm xóa các sản phẩm đã mua với số lượng tương ứng
+      removeItemsFromBasket: (itemsToRemove) =>
+        set((state) => {
+          let updatedItems = [...state.items];
+
+          itemsToRemove.forEach((removeItem) => {
+            const index = updatedItems.findIndex(
+              (item) => item.product._id === removeItem.product._id
+            );
+
+            if (index !== -1) {
+              const currentQuantity = updatedItems[index].quantity;
+              const removeQuantity = removeItem.quantity;
+
+              if (currentQuantity > removeQuantity) {
+                // Giảm số lượng tương ứng
+                updatedItems[index] = {
+                  ...updatedItems[index],
+                  quantity: currentQuantity - removeQuantity,
+                };
+              } else {
+                // Xóa hoàn toàn sản phẩm khỏi giỏ
+                updatedItems.splice(index, 1);
+              }
+            }
+          });
+
+          return { items: updatedItems };
+        }),
+
       getTotalPrice: () =>
         get().items.reduce(
           (total, item) => total + (item.product.price ?? 0) * item.quantity,
@@ -114,7 +145,7 @@ const useStore = create<StoreState>()(
       clearFavorite: () => set({ favoriteProduct: [] }),
     }),
     {
-      name: "store", // Dữ liệu được lưu tại localStorage key "store"
+      name: "store", // Dữ liệu lưu localStorage key "store"
     }
   )
 );
