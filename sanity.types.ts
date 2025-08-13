@@ -53,6 +53,19 @@ export type Order = {
     review?: {
       rating?: number;
       comment?: string;
+      images?: Array<{
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+        _key: string;
+      }>;
       reviewDate?: string;
     };
     _key: string;
@@ -384,6 +397,19 @@ export type MY_ORDERS_QUERYResult = Array<{
     review?: {
       rating?: number;
       comment?: string;
+      images?: Array<{
+        asset?: {
+          _ref: string;
+          _type: "reference";
+          _weak?: boolean;
+          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+        };
+        media?: unknown;
+        hotspot?: SanityImageHotspot;
+        crop?: SanityImageCrop;
+        _type: "image";
+        _key: string;
+      }>;
       reviewDate?: string;
     };
     _key: string;

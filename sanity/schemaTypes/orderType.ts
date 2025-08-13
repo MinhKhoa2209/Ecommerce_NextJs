@@ -90,6 +90,12 @@ export const orderType = defineType({
                   type: "text",
                 }),
                 defineField({
+                  name: "images",
+                  title: "Review Images",
+                  type: "array",
+                  of: [{ type: "image" }],
+                }),
+                defineField({
                   name: "reviewDate",
                   title: "Review Date",
                   type: "datetime",
@@ -149,7 +155,7 @@ export const orderType = defineType({
         ],
       },
     }),
-     defineField({
+    defineField({
       name: "shippingAddress",
       title: "Shipping Address",
       type: "object",
