@@ -125,10 +125,10 @@ function BasketPage() {
 
       const checkoutUrl = await createCheckoutSession(itemsToBuy, metadata);
       if (checkoutUrl) {
-        removeItemsFromBasket(itemsToBuy);
+        localStorage.setItem("itemsBought", JSON.stringify(itemsToBuy));
+        localStorage.setItem("orderNumber", metadata.orderNumber);
         window.location.href = checkoutUrl;
       }
-      console.log("Products to buy:", itemsToBuy);
     } catch (error) {
       console.error("Error during Stripe checkout:", error);
     } finally {
@@ -173,8 +173,8 @@ function BasketPage() {
 
       const data = await res.json();
       if (data.successUrl) {
-        removeItemsFromBasket(itemsToBuy);
-
+        localStorage.setItem("itemsBought", JSON.stringify(itemsToBuy));
+        localStorage.setItem("orderNumber", metadata.orderNumber);
         window.location.href = data.successUrl;
       }
     } catch (error) {

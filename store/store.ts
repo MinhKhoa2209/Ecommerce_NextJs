@@ -12,7 +12,7 @@ interface StoreState {
   items: BasketItem[];
   addItem: (product: Product) => void;
   removeItem: (productId: string) => void;
-  clearBasket: () => void;
+  // clearBasket: () => void;
   removeItemsFromBasket: (itemsToRemove: BasketItem[]) => void; 
   getTotalPrice: () => number;
   getItemCount: (productId: string) => number;
@@ -65,7 +65,7 @@ const useStore = create<StoreState>()(
           }, [] as BasketItem[]),
         })),
 
-      clearBasket: () => set({ items: [] }),
+      // clearBasket: () => set({ items: [] }),
 
       // Hàm xóa các sản phẩm đã mua với số lượng tương ứng
       removeItemsFromBasket: (itemsToRemove) =>
@@ -82,13 +82,13 @@ const useStore = create<StoreState>()(
               const removeQuantity = removeItem.quantity;
 
               if (currentQuantity > removeQuantity) {
-                // Giảm số lượng tương ứng
+
                 updatedItems[index] = {
                   ...updatedItems[index],
                   quantity: currentQuantity - removeQuantity,
                 };
               } else {
-                // Xóa hoàn toàn sản phẩm khỏi giỏ
+      
                 updatedItems.splice(index, 1);
               }
             }

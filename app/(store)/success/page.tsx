@@ -1,21 +1,34 @@
 "use client";
 
-import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import useBasketStore from "@/store/store";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import useBasketStore from "@/store/store";
 
 function SuccessPage() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("orderNumber");
-  const clearBasket = useBasketStore((state) => state.clearBasket);
+    const removeItemsFromBasket = useBasketStore(
+    (state) => state.removeItemsFromBasket
+  );
 
   useEffect(() => {
-    if (orderNumber) {
-      clearBasket();
+    const itemsBoughtStr = localStorage.getItem("itemsBought");
+    const savedOrderNumber = localStorage.getItem("orderNumber");
+
+    if (itemsBoughtStr && savedOrderNumber === orderNumber) {
+      try {
+        const itemsBought = JSON.parse(itemsBoughtStr);
+        removeItemsFromBasket(itemsBought);
+        localStorage.removeItem("itemsBought");
+        localStorage.removeItem("orderNumber");
+      } catch (error) {
+        console.error("Failed to parse itemsBought from localStorage:", error);
+      }
     }
-  }, [orderNumber, clearBasket]);
+  }, [orderNumber, removeItemsFromBasket]);
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
