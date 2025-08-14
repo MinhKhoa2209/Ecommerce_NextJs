@@ -3,11 +3,7 @@ import { getAllProducts } from "@/sanity/lib/products/getAllProducts";
 import { getProductsByCategory } from "@/sanity/lib/products/getProductByCategory";
 import React from "react";
 
-interface CategoryPageProps {
-  params: { slug: string };
-}
-
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const slug = params.slug.toLowerCase();
 
   const products =
