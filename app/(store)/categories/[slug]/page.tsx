@@ -1,22 +1,24 @@
 import ProductsView from "@/components/ProductsView";
 import { getAllProducts } from "@/sanity/lib/products/getAllProducts";
 import { getProductsByCategory } from "@/sanity/lib/products/getProductByCategory";
-import React from "react";
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
-  const slug = params.slug.toLowerCase();
+type AppPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+export default async function CategoryPage({ params }: AppPageProps) {
+  const { slug: rawSlug } = await params; 
+  const slug = rawSlug.toLowerCase();
 
   const products =
-    slug === "products"
-      ? await getAllProducts()
-      : await getProductsByCategory(slug);
+    slug === "products" ? await getAllProducts() : await getProductsByCategory(slug);
 
   const title =
     slug === "products"
       ? "All Products"
       : slug
           .split("-")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
           .join(" ") + " Collection";
 
   return (
