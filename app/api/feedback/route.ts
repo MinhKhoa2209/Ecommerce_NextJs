@@ -20,8 +20,8 @@ export async function POST(req: Request) {
 
 
     return NextResponse.json({ success: true, result });
-  } catch (error: any) {
-    console.error("❌ Error saving review:", error.message || error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error) {
+    console.error("❌ Error saving review:", error);
+    return NextResponse.json({ success: false, error }, { status: 500 });
   }
 }
