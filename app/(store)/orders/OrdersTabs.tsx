@@ -9,10 +9,11 @@ import OrderForm from "./OrderForm";
 
 const tabs = [
   { key: "pending", label: "Pending Confirmation" },
-  { key: "paid", label: "Awaiting Pickup" },
+  { key: "processing", label: "Awaiting Pickup" },
   { key: "shipped", label: "In Delivery" },
   { key: "delivered", label: "Completed" },
   { key: "cancelled", label: "Cancelled" },
+  { key: "refunded", label: "Refunded" },
 ];
 
 interface OrdersTabsProps {
@@ -23,8 +24,9 @@ export default function OrdersTabs({ orders }: OrdersTabsProps) {
   const [activeTab, setActiveTab] = useState<string>("pending");
   const [selectedOrder, setSelectedOrder] = useState<{
     orderId: string;
-    productIndex: number;
+    productKey: string;
     productName: string;
+    review?: { rating: number; comment: string; images: string[] };
   } | null>(null);
 
   const filteredOrders = orders.filter((order) => order.status === activeTab);
@@ -73,59 +75,106 @@ export default function OrdersTabs({ orders }: OrdersTabsProps) {
               </div>
 
               <div className="space-y-3">
-                {order.products?.map((product, index) => (
-                  <div
-                    key={`${order._id}-${index}`}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      {product.product?.image && (
-                        <Image
-                          src={imageUrl(product.product.image).url()}
-                          alt={product.product?.name ?? ""}
-                          width={60}
-                          height={60}
-                          className="rounded-md object-cover"
-                        />
-                      )}
-                      <div>
-                        <p className="font-medium">{product.product?.name}</p>
-                        <p className="text-sm text-gray-500">
-                          Qty: {product.quantity}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <p className="font-semibold">
-                        {formatCurrency(
-                          (product.product?.price ?? 0) *
-                            (product.quantity ?? 0),
-                          order.currency
-                        )}
-                      </p>
+                {order.products?.map((product) => {
+                  const review = product.review
+                    ? {
+                        rating: product.review.rating ?? 0,
+                        comment: product.review.comment ?? "",
+                        images:
+                          product.review.images?.map((img) =>
+                            img?.asset?._ref
+                              ? imageUrl({
+                                  _type: "image",
+                                  asset: { _ref: img.asset._ref },
+                                }).url()
+                              : ""
+                          ).filter(Boolean) ?? [],
+                      }
+                    : undefined;
 
-                      {activeTab === "delivered" && (
-                        <button
-                          onClick={() =>
-                            setSelectedOrder({
-                              orderId: order._id,
-                              productIndex: index,
-                              productName: product.product?.name ?? "",
-                            })
-                          }
-                          className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
-                        >
-                          Leave Feedback
-                        </button>
+                  return (
+                    <div
+                      key={product._key}
+                      className="flex flex-col border p-3 rounded-lg"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {product.product?.image && (
+                            <Image
+                              src={imageUrl(product.product.image).url()}
+                              alt={product.product?.name ?? ""}
+                              width={60}
+                              height={60}
+                              className="rounded-md object-cover"
+                            />
+                          )}
+                          <div>
+                            <p className="font-medium">
+                              {product.product?.name}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Qty: {product.quantity}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <p className="font-semibold">
+                            {formatCurrency(
+                              (product.product?.price ?? 0) *
+                                (product.quantity ?? 0),
+                              order.currency
+                            )}
+                          </p>
+
+                          {activeTab === "delivered" && (
+                            <button
+                              onClick={() =>
+                                setSelectedOrder({
+                                  orderId: order._id,
+                                  productKey: product._key ?? "",
+                                  productName: product.product?.name ?? "",
+                                  review,
+                                })
+                              }
+                              className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                            >
+                              {review ? "Update Review" : "Leave Feedback"}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Show review if exists */}
+                      {review && (
+                        <div className="mt-3 p-3 bg-gray-50 rounded-md">
+                          <p className="font-medium">Your Review:</p>
+                          <p>⭐ {review.rating} / 5</p>
+                          <p className="text-gray-700">{review.comment}</p>
+                          {review.images.length > 0 && (
+                            <div className="flex gap-2 mt-2">
+                              {review.images.map((img, idx) => (
+                                <Image
+                                  key={idx}
+                                  src={img}
+                                  alt="review image"
+                                  width={60}
+                                  height={60}
+                                  className="rounded object-cover"
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="flex justify-between items-center mt-4">
                 <p className="font-semibold">
-                  Total: {formatCurrency(order.totalPrice ?? 0, order.currency)}
+                  Total:{" "}
+                  {formatCurrency(order.totalPrice ?? 0, order.currency)}
                 </p>
               </div>
             </div>
@@ -137,8 +186,9 @@ export default function OrdersTabs({ orders }: OrdersTabsProps) {
       {selectedOrder && (
         <OrderForm
           orderId={selectedOrder.orderId}
-          productIndex={selectedOrder.productIndex}
+          productKey={selectedOrder.productKey}
           productName={selectedOrder.productName}
+          review={selectedOrder.review}
           onClose={() => setSelectedOrder(null)}
         />
       )}

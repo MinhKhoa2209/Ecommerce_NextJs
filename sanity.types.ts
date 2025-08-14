@@ -73,7 +73,7 @@ export type Order = {
   totalPrice?: number;
   currency?: string;
   amountDiscount?: number;
-  status?: "pending" | "paid" | "shipped" | "delivered" | "cancelled";
+  status?: "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "refunded";
   shippingAddress?: {
     fullName?: string;
     phone?: string;
@@ -417,7 +417,7 @@ export type MY_ORDERS_QUERYResult = Array<{
   totalPrice?: number;
   currency?: string;
   amountDiscount?: number;
-  status?: "cancelled" | "delivered" | "paid" | "pending" | "shipped";
+  status?: "cancelled" | "delivered" | "pending" | "processing" | "refunded" | "shipped";
   shippingAddress?: {
     fullName?: string;
     phone?: string;

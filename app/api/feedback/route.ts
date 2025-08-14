@@ -2,25 +2,26 @@ import { NextResponse } from "next/server";
 import { backendClient } from "@/sanity/lib/backendClient";
 
 export async function POST(req: Request) {
-  const { orderId, productId, rating, comment, images } = await req.json();
+  const { orderId, productKey, rating, comment, images } = await req.json();
+
 
   try {
-await backendClient
-  .patch(orderId)
-  .set({
-    [`products[_key=="${productId}"].review`]: {
-      rating,
-      comment,
-      images,
-      reviewDate: new Date().toISOString(),
-    },
-  })
-  .commit();
+    const result = await backendClient
+      .patch(orderId)
+      .set({
+        [`products[_key=="${productKey}"].review`]: {
+          rating,
+          comment,
+          images,
+          reviewDate: new Date().toISOString(),
+        },
+      })
+      .commit();
 
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error saving review:", error);
-    return NextResponse.json({ success: false }, { status: 500 });
+    return NextResponse.json({ success: true, result });
+  } catch (error: any) {
+    console.error("❌ Error saving review:", error.message || error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

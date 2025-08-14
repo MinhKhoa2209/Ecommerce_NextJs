@@ -381,7 +381,7 @@
             },
             {
               "type": "string",
-              "value": "paid"
+              "value": "processing"
             },
             {
               "type": "string",
@@ -394,6 +394,10 @@
             {
               "type": "string",
               "value": "cancelled"
+            },
+            {
+              "type": "string",
+              "value": "refunded"
             }
           ]
         },
