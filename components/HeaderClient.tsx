@@ -2,7 +2,6 @@
 
 import {
   SignInButton,
-  UserButton,
   useUser,
   ClerkLoaded,
   SignedIn,
@@ -10,7 +9,7 @@ import {
 import Link from "next/link";
 import React from "react";
 import Form from "next/form";
-import { TrolleyIcon, PackageIcon, HeartIcon } from "@sanity/icons";
+import { TrolleyIcon, PackageIcon, HeartIcon, SearchIcon } from "@sanity/icons";
 import useStore from "@/store/store";
 import { CategorySelectorComponent } from "./ui/category-selector";
 import { Category } from "@/sanity.types";
@@ -25,94 +24,80 @@ function HeaderClient({ categories }: { categories: Category[] }) {
 
   const wishlistCount = useStore((state) => state.favoriteProduct.length);
 
-  const createClerkPasskey = async () => {
-    try {
-      const response = await user?.createPasskey();
-      console.log(response);
-    } catch (err) {
-      console.error("Error creating passkey:", JSON.stringify(err, null, 2));
-    }
-  };
-
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white px-4 py-4 shadow">
-      <div className="flex w-full items-center justify-between gap-4 flex-wrap">
+    <header className="fixed top-0 left-0 w-full z-50 bg-white px-6 py-4 shadow">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+
         {/* Logo */}
         <Link
           href="/"
-          className="text-4xl font-extrabold text-blue-600 hover:text-red-500 transition-all"
+          className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-red-500 bg-clip-text text-transparent tracking-tight"
         >
-          Trendy<span className="text-red-500">Fit</span>
+          TrendyFit
         </Link>
 
         {/* Search Form */}
         <Form
           action="/search"
-          className="w-1/2 sm:w-auto sm:flex-1 sm:mx-4 mt-2 sm:mt-0"
+          className="flex items-center flex-1 max-w-xl bg-gray-100 rounded-full px-4 py-2 border border-gray-300 focus-within:ring-2 focus-within:ring-blue-500"
         >
+          <SearchIcon className="w-5 h-5 text-gray-500 mr-2" />
           <input
             type="text"
             name="query"
             placeholder="Search for products"
-            className="bg-gray-100 text-gray-800 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 border w-1/2"
+            className="bg-transparent flex-1 outline-none text-gray-800"
           />
         </Form>
 
-        {/* Buttons */}
-        <div className="flex items-center space-x-4 mt-4 sm:mt-0 flex-1 sm:flex-none">
-          <div className="flex-1 relative flex justify-center sm:justify-start sm:flex-none items-center space-x-2 py-2 px-1 rounded">
+        {/* Action Buttons */}
+        <div className="flex items-center gap-5">
+
+          <div className="hidden sm:block">
             <CategorySelectorComponent categories={categories} />
           </div>
+
           <ClerkLoaded>
             <SignedIn>
               {/* Wishlist */}
-              <Link
-                href="/wishlist"
-                className="flex-1 relative flex justify-center sm:justify-start sm:flex-none items-center space-x-2 bg-pink-400 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded"
-              >
-                <HeartIcon className="w-6 h-6" />
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                  {wishlistCount}
+              <Link href="/wishlist" className="relative group">
+                <HeartIcon className="w-6 h-6 text-gray-700 hover:text-pink-500 transition-colors" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition">
+                  Wishlist
                 </span>
-                <span>Wishlist</span>
               </Link>
 
               {/* Basket */}
-              <Link
-                href="/basket"
-                className="flex-1 relative flex justify-center sm:justify-start sm:flex-none items-center space-x-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                <TrolleyIcon className="h-6 w-6" />
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                  {itemCount}
+              <Link href="/basket" className="relative group">
+                <TrolleyIcon className="w-6 h-6 text-gray-700 hover:text-blue-600 transition-colors" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                    {itemCount}
+                  </span>
+                )}
+                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition">
+                  Basket
                 </span>
-                <span>My Basket</span>
               </Link>
 
-              <Link
-                href="/orders"
-                className="flex-1 relative flex justify-center sm:justify-start sm:flex-none items-center space-x-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              >
-                <PackageIcon className="w-6 h-6" />
-                <span>My Orders</span>
+              {/* Orders */}
+              <Link href="/orders" className="relative group">
+                <PackageIcon className="w-6 h-6 text-gray-700 hover:text-green-600 transition-colors" />
+                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition">
+                  Orders
+                </span>
               </Link>
             </SignedIn>
 
             {user ? (
-              <div className="flex items-center space-x-2">
-                <CustomUserButton />
-              </div>
+              <CustomUserButton />
             ) : (
               <SignInButton mode="modal" />
-            )}
-
-            {user?.passkeys?.length === 0 && (
-              <button
-                onClick={createClerkPasskey}
-                className="bg-white text-blue-500 font-bold py-2 px-4 rounded border border-blue-300 hover:bg-blue-700 hover:text-white animate-pulse"
-              >
-                Create a passkey
-              </button>
             )}
           </ClerkLoaded>
         </div>

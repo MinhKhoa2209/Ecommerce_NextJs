@@ -22,7 +22,12 @@ type Props = {
   onSetDefault: (id: string) => void;
 };
 
-export default function AddressList({ addresses, onEdit, onDelete, onSetDefault }: Props) {
+export default function AddressList({
+  addresses,
+  onEdit,
+  onDelete,
+  onSetDefault,
+}: Props) {
   if (!addresses || addresses.length === 0) {
     return <div className="text-gray-500">No addresses yet.</div>;
   }

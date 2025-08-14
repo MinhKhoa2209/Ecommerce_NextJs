@@ -4,8 +4,11 @@ import { Product } from "@/sanity.types";
 import Link from "next/link";
 import Image from "next/image";
 import { imageUrl } from "@/lib/imageUrl";
-import useStore from "@/store/store"; 
-import { HeartIcon } from "@sanity/icons";
+import useStore from "@/store/store";
+import { HeartIcon, TrolleyIcon } from "@sanity/icons";
+import { ShoppingCart } from "lucide-react";
+
+import useBasketStore from "@/store/store";
 
 function ProductThumb({ product }: { product: Product }) {
   const isOutOfStock = product.stock != null && product.stock <= 0;
@@ -15,9 +18,10 @@ function ProductThumb({ product }: { product: Product }) {
   const removeFromFavorite = useStore((state) => state.removeFromFavorite);
 
   const isFavorited = favoriteProduct.some((item) => item._id === product._id);
+  const { addItem } = useBasketStore();
 
   const toggleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault(); 
+    e.preventDefault();
     if (isFavorited) {
       removeFromFavorite(product._id);
     } else {
@@ -42,6 +46,21 @@ function ProductThumb({ product }: { product: Product }) {
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
+            {/* Heart icon trên ảnh */}
+            <button
+              onClick={toggleFavorite}
+              className="absolute top-2 right-2 p-1 bg-white rounded-full shadow hover:scale-110 transition-transform duration-200"
+              aria-label="Add to wishlist"
+            >
+              <HeartIcon
+                className={`w-6 h-6 ${
+                  isFavorited
+                    ? "text-red-500 fill-red-500"
+                    : "text-gray-400 fill-none"
+                }`}
+              />
+            </button>
+
             {isOutOfStock && (
               <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
                 <span className="text-white font-bold text-lg">
@@ -73,17 +92,14 @@ function ProductThumb({ product }: { product: Product }) {
             ${product.price?.toFixed(2)}
           </p>
           <button
-            onClick={toggleFavorite}
-            className="transition-colors duration-200"
-            aria-label="Add to wishlist"
+            onClick={(e) => {
+              e.preventDefault();
+              addItem(product);
+            }}
+            className="bg-white rounded-full shadow hover:scale-110 transition-transform duration-200"
+            aria-label="Add to cart"
           >
-            <HeartIcon
-              className={`w-6 h-6 ${
-                isFavorited
-                  ? "text-red-500 fill-red-500"
-                  : "text-gray-400 fill-none"
-              } hover:scale-110 transition-transform duration-200`}
-            />
+            <TrolleyIcon className="w-5 h-5 text-gray-400 " />
           </button>
         </div>
       </div>

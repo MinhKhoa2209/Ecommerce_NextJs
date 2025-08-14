@@ -259,17 +259,24 @@ function BasketPage() {
             <h2 className="text-xl font-semibold">Shipping Address</h2>
           </div>
           {shippingAddress ? (
-            <div className="text-gray-700 leading-relaxed whitespace-pre-line bg-blue-50 p-4 rounded border border-blue-200">
-              {[
-                shippingAddress.fullName,
-                shippingAddress.phone,
-                shippingAddress.line1,
-                shippingAddress.line2,
-                `${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.postalCode}`,
-                shippingAddress.country,
-              ]
-                .filter(Boolean)
-                .join(", ")}
+            <div className="text-gray-700 leading-relaxed bg-blue-50 p-4 rounded border border-blue-200">
+              <div>
+                <span className="font-bold">{shippingAddress.fullName}</span>
+                {shippingAddress.phone && `, ${shippingAddress.phone}`}
+              </div>
+
+              {shippingAddress.line1 && <div>{shippingAddress.line1}</div>}
+
+              <div>
+                {[
+                  shippingAddress.postalCode,
+                  shippingAddress.state,
+                  shippingAddress.city,
+                  shippingAddress.country,
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+              </div>
             </div>
           ) : (
             <div className="text-red-500 font-medium">

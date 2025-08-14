@@ -52,8 +52,6 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true });
 }
 async function createOrderInSanity(session: Stripe.Checkout.Session) {
-
-
   const {
     id,
     amount_total,

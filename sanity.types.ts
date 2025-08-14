@@ -159,6 +159,18 @@ export type Category = {
   title?: string;
   slug?: Slug;
   description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
 };
 
 export type BlockContent = Array<{
@@ -443,6 +455,18 @@ export type ALL_CATEGORIES_QUERYResult = Array<{
   title?: string;
   slug?: Slug;
   description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
 }>;
 
 // Source: ./sanity/lib/products/getAllProducts.ts
@@ -643,10 +667,143 @@ export type PRODUCT_BY_ID_QUERYResult = {
   isFeatured?: boolean;
 } | null;
 
+// Source: ./sanity/lib/products/getProductsByBestSellers.ts
+// Variable: BEST_SELLERS_QUERY
+// Query: *[      _type == "product" &&      count(*[        _type == "order" &&        references(^._id) &&        defined(products[].review.rating)      ]) > 0    ]{      ...,      "avgRating": round(        math::avg(          *[            _type == "order" &&            references(^._id)          ].products[].review.rating        )      )    }    | order(avgRating desc)[0...4]
+export type BEST_SELLERS_QUERYResult = Array<{
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  description?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "normal";
+    listItem?: "bullet";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  } | {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+    _key: string;
+  }>;
+  price?: number;
+  category?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "category";
+  }>;
+  stock?: number;
+  isFeatured?: boolean;
+  avgRating: number | null;
+}>;
+
 // Source: ./sanity/lib/products/getProductsByFeatured.ts
 // Variable: FEATURED_PRODUCTS_QUERY
 // Query: *[_type == "product" && isFeatured == true]| order(_createdAt desc)
 export type FEATURED_PRODUCTS_QUERYResult = Array<{
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  description?: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "normal";
+    listItem?: "bullet";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  } | {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+    _key: string;
+  }>;
+  price?: number;
+  category?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "category";
+  }>;
+  stock?: number;
+  isFeatured?: boolean;
+}>;
+
+// Source: ./sanity/lib/products/getProductsByNewArrivals.ts
+// Variable: NEW_ARRIVALS_QUERY
+// Query: *[_type == "product"] | order(_createdAt desc)[0...4]
+export type NEW_ARRIVALS_QUERYResult = Array<{
   _id: string;
   _type: "product";
   _createdAt: string;
@@ -824,7 +981,9 @@ declare module "@sanity/client" {
     "*[_type == \"product\"] | order(_name asc)": ALL_PRODUCTS_QUERYResult;
     "\n    *[_type == \"product\" && references(*[_type == \"category\" && slug.current == $categorySlug]._id)]\n    | order(name asc)\n  ": PRODUCTS_BY_CATEGORY_QUERYResult;
     " *[_type == \"product\" && slug.current == $slug] | order(name asc)[0]": PRODUCT_BY_ID_QUERYResult;
+    "\n    *[\n      _type == \"product\" &&\n      count(*[\n        _type == \"order\" &&\n        references(^._id) &&\n        defined(products[].review.rating)\n      ]) > 0\n    ]{\n      ...,\n      \"avgRating\": round(\n        math::avg(\n          *[\n            _type == \"order\" &&\n            references(^._id)\n          ].products[].review.rating\n        )\n      )\n    }\n    | order(avgRating desc)[0...4]  \n  ": BEST_SELLERS_QUERYResult;
     "*[_type == \"product\" && isFeatured == true]| order(_createdAt desc)": FEATURED_PRODUCTS_QUERYResult;
+    "*[_type == \"product\"] | order(_createdAt desc)[0...4]": NEW_ARRIVALS_QUERYResult;
     "\n    *[_type == \"product\" && $categoryRef in category[]._ref && slug.current != $excludeSlug][0...5]{\n      _id,\n      name,\n      slug,\n      price,\n      image\n    }\n  ": RELATED_PRODUCTS_QUERYResult;
     "\n    *[_type == \"product\" && name match $searchParam] | order(name asc)\n  ": PRODUCT_SEARCH_QUERYResult;
     "\n    *[_type == \"sale\" && isActive == true && couponCode == $couponCode]\n    | order(validFrom desc)[0]\n  ": ACTIVE_SALE_BY_COUPON_QUERYResult;

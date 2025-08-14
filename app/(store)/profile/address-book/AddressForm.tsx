@@ -11,19 +11,25 @@ type Props = {
   saving?: boolean;
 };
 
-export default function AddressForm({ initialAddress, onSave, onCancel, saving }: Props) {
+export default function AddressForm({
+  initialAddress,
+  onSave,
+  onCancel,
+  saving,
+}: Props) {
   const [fullName, setFullName] = useState(initialAddress?.fullName || "");
   const [phone, setPhone] = useState(initialAddress?.phone || "");
   const [line1, setLine1] = useState(initialAddress?.line1 || "");
   const [line2, setLine2] = useState(initialAddress?.line2 || "");
-  
-  // Chúng ta dùng 3 trường này thay cho city, state, postalCode cũ
-  const [province, setProvince] = useState(initialAddress?.city || "");  // bạn có thể map city = province hoặc tạo trường riêng trong Address
-  const [district, setDistrict] = useState(initialAddress?.state || "");
-  const [ward, setWard] = useState(initialAddress?.postalCode || "");    // nếu postalCode không phù hợp bạn có thể để string rỗng
 
-  const [country, setCountry] = useState(initialAddress?.country || "Vietnam");
-  const [isDefault, setIsDefault] = useState<boolean>(!!initialAddress?.isDefault);
+  const [province, setProvince] = useState(initialAddress?.city || ""); 
+  const [district, setDistrict] = useState(initialAddress?.state || "");
+  const [ward, setWard] = useState(initialAddress?.postalCode || ""); 
+
+  const [country, setCountry] = useState(initialAddress?.country || "Việt Nam");
+  const [isDefault, setIsDefault] = useState<boolean>(
+    !!initialAddress?.isDefault
+  );
 
   useEffect(() => {
     setFullName(initialAddress?.fullName || "");
@@ -33,12 +39,16 @@ export default function AddressForm({ initialAddress, onSave, onCancel, saving }
     setProvince(initialAddress?.city || "");
     setDistrict(initialAddress?.state || "");
     setWard(initialAddress?.postalCode || "");
-    setCountry(initialAddress?.country || "Vietnam");
+    setCountry(initialAddress?.country || "Việt Nam");
     setIsDefault(!!initialAddress?.isDefault);
   }, [initialAddress]);
 
   // Hàm nhận giá trị từ AddressSelector
-  const handleAddressChange = (addr: { province: string; district: string; ward: string }) => {
+  const handleAddressChange = (addr: {
+    province: string;
+    district: string;
+    ward: string;
+  }) => {
     setProvince(addr.province);
     setDistrict(addr.district);
     setWard(addr.ward);
@@ -49,7 +59,9 @@ export default function AddressForm({ initialAddress, onSave, onCancel, saving }
 
     // Kiểm tra bắt buộc:
     if (!fullName || !phone || !line1 || !province || !district || !ward) {
-      alert("Please fill at least: name, phone, address line 1, province, district, ward.");
+      alert(
+        "Please fill at least: name, phone, address line 1, province, district, ward."
+      );
       return;
     }
 
@@ -59,9 +71,9 @@ export default function AddressForm({ initialAddress, onSave, onCancel, saving }
       phone,
       line1,
       line2,
-      city: province,      // lưu province vào city
-      state: district,     // lưu district vào state
-      postalCode: ward,    // lưu ward vào postalCode
+      city: province, // lưu province vào city
+      state: district, // lưu district vào state
+      postalCode: ward, // lưu ward vào postalCode
       country,
       isDefault,
     };
@@ -78,12 +90,24 @@ export default function AddressForm({ initialAddress, onSave, onCancel, saving }
           placeholder="Full name"
           className="border rounded px-3 py-2"
         />
-        <input
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          placeholder="Phone number"
-          className="border rounded px-3 py-2"
-        />
+        <div className="flex border rounded overflow-hidden">
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => {
+              let val = e.target.value.replace(/\D/g, ""); 
+              if (val.startsWith("0")) {
+                val = "+84" + val.slice(1);
+              }
+              if (val.length > 2) {
+                val = val.replace(/^(\d{2})(\d{3})(\d{3})/, "($1) $2 $3");
+              }
+              setPhone(val);
+            }}
+            placeholder="Phone number"
+            className="flex-1 px-3 py-2 outline-none"
+          />
+        </div>
       </div>
 
       <input
@@ -113,15 +137,28 @@ export default function AddressForm({ initialAddress, onSave, onCancel, saving }
       />
 
       <label className="inline-flex items-center gap-2">
-        <input type="checkbox" checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} />
+        <input
+          type="checkbox"
+          checked={isDefault}
+          onChange={(e) => setIsDefault(e.target.checked)}
+        />
         <span>Set as default address</span>
       </label>
 
       <div className="flex gap-2">
-        <button type="button" onClick={handleSubmit} disabled={saving} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={saving}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+        >
           {saving ? "Saving..." : "Save"}
         </button>
-        <button type="button" onClick={() => onCancel?.()} className="border px-4 py-2 rounded">
+        <button
+          type="button"
+          onClick={() => onCancel?.()}
+          className="border px-4 py-2 rounded"
+        >
           Cancel
         </button>
       </div>

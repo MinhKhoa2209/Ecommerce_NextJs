@@ -16,9 +16,9 @@ function FooterClient({ categories }: { categories: Category[] }) {
           <div className="space-y-4">
             <Link
               href="/"
-              className="text-4xl font-extrabold text-blue-600 hover:text-red-500 transition-all"
+              className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-red-500 bg-clip-text text-transparent tracking-tight"
             >
-              Trendy<span className="text-red-500">Fit</span>
+              TrendyFit
             </Link>
 
             <p className="text-gray-600 italic max-w-sm text-sm">
@@ -71,7 +71,9 @@ function FooterClient({ categories }: { categories: Category[] }) {
                 <Link href="/information/contact">Contact us</Link>
               </li>
               <li>
-                <Link href="/information/terms_conditions">Terms & Conditions</Link>
+                <Link href="/information/terms_conditions">
+                  Terms & Conditions
+                </Link>
               </li>
               <li>
                 <Link href="/information/privacy_policy">Privacy Policy</Link>

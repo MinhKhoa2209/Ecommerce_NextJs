@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, Check } from "lucide-react";
+import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,16 +42,22 @@ export function CategorySelectorComponent({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-40 relative flex justify-center sm:justify-start
-                 sm:flex-none items-center space-x-2 bg-blue-500 hover:bg-blue-700
-                 text-white font-bold py-5 px-4 rounded "
+          className="w-40 flex items-center justify-between px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:border-blue-500 hover:text-blue-500 transition-colors shadow-sm"
+          onClick={() => {
+            if (!value) {
+              router.push("/categories/products");
+            }
+          }}
         >
-          {value
-            ? categories.find((category) => category._id === value)?.title
-            : "Filter by Category"}
-          <ChevronsUpDown className=" h-4 w-4 shrink-0" />
+          <span className="truncate">
+            {value
+              ? categories.find((category) => category._id === value)?.title
+              : "All Products"}
+          </span>
+          <ChevronDown className="h-4 w-4 flex-shrink-0" />
         </Button>
       </PopoverTrigger>
+
       <PopoverContent
         className="w-40 p-0"
         onMouseEnter={() => setOpen(true)}
