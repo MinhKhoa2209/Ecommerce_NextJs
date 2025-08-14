@@ -35,8 +35,8 @@ export async function createCheckoutSession(
     }
     const baseUrl =
       process.env.NODE_ENV === "production"
-        ? `https://${process.env.VERCEL_URL}`
-        : `${process.env.NEXT_PUBLIC_BASE_URL}`;
+        ? process.env.NEXT_PUBLIC_SITE_URL
+        : process.env.NEXT_PUBLIC_BASE_URL;
 
     const successUrl = `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&orderNumber=${metadata.orderNumber}`;
 
@@ -69,8 +69,6 @@ export async function createCheckoutSession(
         quantity: item.quantity,
       })),
     });
-
-
 
     return session.url;
   } catch (error) {
