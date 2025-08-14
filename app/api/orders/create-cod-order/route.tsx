@@ -52,10 +52,11 @@ export async function POST(req: NextRequest) {
       shippingAddress: shippingAddress || null,
     });
 
-    const baseUrl =
+       const baseUrl =
       process.env.NODE_ENV === "production"
-        ? `https://${process.env.VERCEL_URL}`
-        : `${process.env.NEXT_PUBLIC_BASE_URL}`;
+        ? process.env.NEXT_PUBLIC_SITE_URL
+        : process.env.NEXT_PUBLIC_BASE_URL;
+
 
     const successUrl = `${baseUrl}/success?orderId=${order._id}&orderNumber=${metadata.orderNumber}`;
 
