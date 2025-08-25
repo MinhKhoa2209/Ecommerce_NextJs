@@ -15,28 +15,16 @@ import {
 import { ShoppingBasket } from "lucide-react";
 import Link from "next/link";
 import { ShoppingCart, MapPin, CreditCard, Truck } from "lucide-react";
-
-type Address = {
-  id: string;
-  fullName: string;
-  phone: string;
-  line1: string;
-  line2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-  isDefault: boolean;
-};
+import { Address } from "../profile/address-book/AddressList";
+import { useAddressStore } from "@/store/addressStore";
 
 function BasketPage() {
   const groupedItems = useBasketStore((state) => state.getGroupedItems());
   const { isSignedIn } = useAuth();
-  const clerkUser = useUser().user;
-  const router = useRouter();
+  const { user: clerkUser } = useUser();
 
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [shippingAddress, setShippingAddress] = useState<Address | null>(null);
+ const { addresses, shippingAddress, setAddresses, setShippingAddress, hasLoadedAddresses, setHasLoadedAddresses } = useAddressStore();
+
 
   const [selectedItems, setSelectedItems] = useState<{ [id: string]: boolean }>(
     {}
@@ -51,23 +39,22 @@ function BasketPage() {
     "stripe"
   );
 
-  useEffect(() => {
-    setIsClient(true);
+useEffect(() => {
+  setIsClient(true);
+  if (!clerkUser) return;
 
-    if (!clerkUser) return;
-
-    const storedAddresses = clerkUser.publicMetadata?.addresses;
+  if (!hasLoadedAddresses) {
+    const storedAddresses = clerkUser.publicMetadata?.addresses as Address[] | undefined;
     if (Array.isArray(storedAddresses)) {
       setAddresses(storedAddresses);
-      const defaultAddr = storedAddresses.find((a) => a.isDefault) || null;
-      setShippingAddress(defaultAddr);
-    } else {
-      setAddresses([]);
-      setShippingAddress(null);
+      setShippingAddress(storedAddresses.find((a) => a.isDefault) || null);
     }
+    setHasLoadedAddresses(true);
+  }
 
-    setSelectedItems({});
-  }, [clerkUser, groupedItems]);
+  setSelectedItems({});
+}, [clerkUser, groupedItems, hasLoadedAddresses, setAddresses, setShippingAddress, setHasLoadedAddresses]);
+
 
   if (!isClient) {
     return <Loader />;

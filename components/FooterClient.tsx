@@ -26,7 +26,7 @@ function FooterClient({ categories }: { categories: Category[] }) {
               <span className="font-semibold text-blue-500">TrendyFit</span>.”
             </p>
 
-            <ul className="flex space-x-6 text-gray-700">
+            <ul className="flex flex-col sm:flex-row sm:space-x-6 space-y-4 sm:space-y-0 text-gray-700">
               <li>
                 <Link
                   href="https://github.com/MinhKhoa2209"
@@ -101,40 +101,19 @@ function FooterClient({ categories }: { categories: Category[] }) {
           </div>
 
           {/* Column 4 - Newsletter */}
-          <div>
-            <h3 className="font-bold mb-4 text-lg">Newsletter</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Subscribe to our newsletter to receive updates and exclusive
-              offers.
+          <div className="relative bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500 text-white p-6 rounded-2xl shadow-lg">
+            <h3 className="font-extrabold mb-3 text-xl tracking-tight">
+              Join the Trend
+            </h3>
+            <p className="text-sm opacity-95 leading-relaxed">
+              Be the first to explore{" "}
+              <span className="font-semibold">exclusive drops</span>, special
+              discounts, and the latest fashion stories from{" "}
+              <span className="font-semibold">TrendyFit</span>.
             </p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const email = (
-                  e.currentTarget.elements.namedItem(
-                    "email"
-                  ) as HTMLInputElement
-                )?.value;
-                if (email) {
-                  console.log("Subscribed:", email);
-                }
-              }}
-              className="flex flex-col space-y-3"
-            >
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-black"
-              />
-              <button
-                type="submit"
-                className="bg-black text-white py-2 rounded-md font-semibold hover:bg-gray-800 transition"
-              >
-                Subscribe
-              </button>
-            </form>
+            <p className="mt-4 text-xs italic opacity-80">
+              *Style meets comfort — stay inspired with every look.
+            </p>
           </div>
         </div>
 

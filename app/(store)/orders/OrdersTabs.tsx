@@ -29,6 +29,40 @@ export default function OrdersTabs({ orders }: OrdersTabsProps) {
     review?: { rating: number; comment: string; images: string[] };
   } | null>(null);
 
+  async function updateOrderStatus(orderId: string, status: string) {
+    const res = await fetch(`/api/orders/${orderId}/update-status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to update order status");
+    }
+
+    return res.json();
+  }
+
+  const handleCancelOrder = async (orderId: string) => {
+    try {
+      await updateOrderStatus(orderId, "cancelled");
+      alert("Order cancelled successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to cancel order");
+    }
+  };
+
+  const handleRequestRefund = async (orderId: string) => {
+    try {
+      await updateOrderStatus(orderId, "refunded");
+      alert("Refund requested successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to request refund");
+    }
+  };
+
   const filteredOrders = orders.filter((order) => order.status === activeTab);
 
   return (
@@ -81,14 +115,16 @@ export default function OrdersTabs({ orders }: OrdersTabsProps) {
                         rating: product.review.rating ?? 0,
                         comment: product.review.comment ?? "",
                         images:
-                          product.review.images?.map((img) =>
-                            img?.asset?._ref
-                              ? imageUrl({
-                                  _type: "image",
-                                  asset: { _ref: img.asset._ref },
-                                }).url()
-                              : ""
-                          ).filter(Boolean) ?? [],
+                          product.review.images
+                            ?.map((img) =>
+                              img?.asset?._ref
+                                ? imageUrl({
+                                    _type: "image",
+                                    asset: { _ref: img.asset._ref },
+                                  }).url()
+                                : ""
+                            )
+                            .filter(Boolean) ?? [],
                       }
                     : undefined;
 
@@ -126,20 +162,40 @@ export default function OrdersTabs({ orders }: OrdersTabsProps) {
                             )}
                           </p>
 
-                          {activeTab === "delivered" && (
+                          {/* Chỉ cho hủy khi pending */}
+                          {activeTab === "pending" && (
                             <button
-                              onClick={() =>
-                                setSelectedOrder({
-                                  orderId: order._id,
-                                  productKey: product._key ?? "",
-                                  productName: product.product?.name ?? "",
-                                  review,
-                                })
-                              }
-                              className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                              onClick={() => handleCancelOrder(order._id)}
+                              className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
                             >
-                              {review ? "Update Review" : "Leave Feedback"}
+                              Cancel Order
                             </button>
+                          )}
+
+                          {/* Chỉ cho refund khi delivered */}
+                          {activeTab === "delivered" && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  setSelectedOrder({
+                                    orderId: order._id,
+                                    productKey: product._key ?? "",
+                                    productName: product.product?.name ?? "",
+                                    review,
+                                  })
+                                }
+                                className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                              >
+                                {review ? "Update Review" : "Leave Feedback"}
+                              </button>
+
+                              <button
+                                onClick={() => handleRequestRefund(order._id)}
+                                className="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 text-sm"
+                              >
+                                Request Refund
+                              </button>
+                            </>
                           )}
                         </div>
                       </div>
