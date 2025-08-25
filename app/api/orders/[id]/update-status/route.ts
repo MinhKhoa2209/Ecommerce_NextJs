@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { backendClient } from "@/sanity/lib/backendClient";
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest) {
   try {
+    const pathname = req.nextUrl.pathname;
+    const id = pathname.split("/")[3]; 
+
     const { status } = await req.json();
 
     if (!status) {
@@ -14,8 +14,9 @@ export async function PATCH(
         { status: 400 }
       );
     }
+
     const updatedOrder = await backendClient
-      .patch(params.id)
+      .patch(id)
       .set({ status })
       .commit();
 
