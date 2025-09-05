@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useUser, useAuth, SignInButton } from "@clerk/nextjs";
 import useBasketStore from "@/store/store";
 import AddToBasketButton from "@/components/AddToBasketButton";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { imageUrl } from "@/lib/imageUrl";
 import Loader from "@/components/Loader";
@@ -23,8 +22,14 @@ function BasketPage() {
   const { isSignedIn } = useAuth();
   const { user: clerkUser } = useUser();
 
- const { addresses, shippingAddress, setAddresses, setShippingAddress, hasLoadedAddresses, setHasLoadedAddresses } = useAddressStore();
-
+  const {
+    addresses,
+    shippingAddress,
+    setAddresses,
+    setShippingAddress,
+    hasLoadedAddresses,
+    setHasLoadedAddresses,
+  } = useAddressStore();
 
   const [selectedItems, setSelectedItems] = useState<{ [id: string]: boolean }>(
     {}
@@ -39,22 +44,28 @@ function BasketPage() {
     "stripe"
   );
 
-useEffect(() => {
-  setIsClient(true);
-  if (!clerkUser) return;
+  useEffect(() => {
+    setIsClient(true);
+    if (!clerkUser) return;
 
-  if (!hasLoadedAddresses) {
-    const storedAddresses = clerkUser.publicMetadata?.addresses as Address[] | undefined;
-    if (Array.isArray(storedAddresses)) {
-      setAddresses(storedAddresses);
-      setShippingAddress(storedAddresses.find((a) => a.isDefault) || null);
+    if (!hasLoadedAddresses) {
+      const storedAddresses = clerkUser.publicMetadata?.addresses as
+        | Address[]
+        | undefined;
+      if (Array.isArray(storedAddresses)) {
+        setAddresses(storedAddresses);
+        setShippingAddress(storedAddresses.find((a) => a.isDefault) || null);
+      }
+      setHasLoadedAddresses(true);
     }
-    setHasLoadedAddresses(true);
-  }
-
-  setSelectedItems({});
-}, [clerkUser, groupedItems, hasLoadedAddresses, setAddresses, setShippingAddress, setHasLoadedAddresses]);
-
+  }, [
+    clerkUser,
+    groupedItems,
+    hasLoadedAddresses,
+    setAddresses,
+    setShippingAddress,
+    setHasLoadedAddresses,
+  ]);
 
   if (!isClient) {
     return <Loader />;
