@@ -11,6 +11,7 @@ import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { getAllCategories } from "@/sanity/lib/products/getAllCategories";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ChatBot from "@/components/ChatBot";
 
 
 export const metadata: Metadata = {
@@ -36,6 +37,7 @@ export default async function RootLayout({
           <main className="pt-20">
             <Header  />
             {children}
+               <ChatBot />
             <Footer />
               <ScrollToTopButton />
           </main>

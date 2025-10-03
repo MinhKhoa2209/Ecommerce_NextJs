@@ -10,7 +10,7 @@ function FooterClient({ categories }: { categories: Category[] }) {
 
   return (
     <footer className="bg-gray-100 text-gray-800 mt-10">
-      <div className="max-w-7xl mx-auto px-4 py-10">
+      <div className="max-w-7xl mx-auto  py-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Column 1 - Branding */}
           <div className="space-y-4">
@@ -101,7 +101,7 @@ function FooterClient({ categories }: { categories: Category[] }) {
           </div>
 
           {/* Column 4 - Newsletter */}
-          <div className="relative bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500 text-white p-6 rounded-2xl shadow-lg">
+          <div className=" bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500 text-white p-6 rounded-2xl shadow-lg">
             <h3 className="font-extrabold mb-3 text-xl tracking-tight">
               Join the Trend
             </h3>
