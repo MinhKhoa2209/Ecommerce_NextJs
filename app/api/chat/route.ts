@@ -8,19 +8,34 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const messages = body.messages ?? [];
-
-    // Lấy message cuối cùng
     const lastMsg: string = messages[messages.length - 1]?.content || "";
-    const query = lastMsg.toLowerCase();
-
-    // Lấy tất cả sản phẩm
+    const query = lastMsg.toLowerCase().trim();
     const products: Product[] = await getAllProducts();
+    const formatPriceUSD = (price?: number) =>
+      price ? `$${price.toLocaleString("en-US", { minimumFractionDigits: 2 })}` : "N/A";
 
-    // Helper format product
     const formatProduct = (p: Product) =>
-      `${p.name ?? "Unnamed"} - ${p.price ?? "N/A"}`;
+      `${p.name ?? "Unnamed"} - ${formatPriceUSD(p.price)}`;
 
-    // 1. All products
+    const keywords = ["all products", "new products", "hot products", "product name"];
+
+    if (
+      query === "" ||
+      query.includes("help") ||
+      query.includes("suggest") ||
+      query.includes("hint") ||
+      query.includes("what can you do") ||
+      query.includes("gợi ý") ||
+      query.includes("tư vấn") ||
+      query.includes("hướng dẫn")
+    ) {
+      return NextResponse.json({
+        text:
+          "I can help you find products.\nHere are some suggestions:\n" +
+          keywords.map((k) => `• ${k}`).join("\n"),
+      });
+    }
+
     if (query.includes("all products")) {
       const productList = products.map(formatProduct).join("\n");
       return NextResponse.json({
@@ -28,7 +43,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2. New products
     if (query.includes("new products")) {
       const newProducts: Product[] = await getProductsByNewArrivals();
       if (!newProducts.length) {
@@ -40,7 +54,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // 3. Hot products
     if (query.includes("hot products")) {
       const hotProducts: Product[] = await getProductsByFeatured();
       if (!hotProducts.length) {
@@ -52,7 +65,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // 4. Search theo tên
     const found = products.find(
       (p) => p.name && p.name.toLowerCase().includes(query)
     );
@@ -63,9 +75,10 @@ export async function POST(req: Request) {
       });
     }
 
-    // 5. Không tìm thấy
     return NextResponse.json({
-      text: "Sorry, I couldn't find a matching product.",
+      text:
+        "Sorry, I couldn't find a matching product.\nTry one of these:\n" +
+        keywords.map((k) => `• ${k}`).join("\n"),
     });
   } catch (err: unknown) {
     return NextResponse.json({ error: String(err) }, { status: 500 });

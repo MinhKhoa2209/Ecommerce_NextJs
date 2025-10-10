@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "../globals.css";
 import { SanityLive } from "@/sanity/lib/live";
@@ -8,11 +7,9 @@ import { DisableDraftMode } from "@/components/DisableDraftMode";
 import { VisualEditing } from "next-sanity";
 
 import ScrollToTopButton from "@/components/ScrollToTopButton";
-import { getAllCategories } from "@/sanity/lib/products/getAllCategories";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatBot from "@/components/ChatBot";
-
+import ChatWrapper from "@/components/ChatWrapper"; 
 
 export const metadata: Metadata = {
   title: "TrendyFit",
@@ -24,22 +21,24 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const draft = await draftMode();
+
   return (
     <ClerkProvider dynamic>
       <html lang="en">
         <body>
-          {(await draftMode()).isEnabled && (
+          {draft.isEnabled && (
             <>
               <DisableDraftMode />
               <VisualEditing />
             </>
           )}
           <main className="pt-20">
-            <Header  />
+            <Header />
             {children}
-               <ChatBot />
+            <ChatWrapper />
+            <ScrollToTopButton />
             <Footer />
-              <ScrollToTopButton />
           </main>
           <SanityLive />
         </body>
